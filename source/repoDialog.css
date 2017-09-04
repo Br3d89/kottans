@@ -1,0 +1,8 @@
+.result {
+    list-style-type: none;
+}
+
+.avatars {
+    border-radius: 50%;
+    max-width: 100px;
+}
