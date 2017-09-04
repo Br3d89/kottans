@@ -6,7 +6,7 @@ const Sort = (props) => {
     const { updateSort, updateOrder, sorts, order  } = props;
     console.log('order=',order);
 
-    const orderBtnSrc = order? '/src/asc.png':'/src/desc.png'
+    const orderBtnSrc = order? '/source/asc.png':'/source/desc.png'
     const sortArray = sorts.map((value,index)=>{
         return (<option
             key={value.name+index}

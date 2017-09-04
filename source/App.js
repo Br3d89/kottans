@@ -4,6 +4,10 @@ import Result from './Result';
 import Filters from './Filters';
 import Sort from './Sort';
 import styles from './app.css'
+import Modal from 'react-modal';
+import RepoDialog from './RepoDialog'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+
 
 export default class App extends Component {
     constructor(props) {
@@ -391,6 +395,16 @@ export default class App extends Component {
 
 
     render(){
+        const customStyles = {
+            content : {
+                top                   : '50%',
+                left                  : '50%',
+                right                 : 'auto',
+                bottom                : 'auto',
+                marginRight           : '-50%',
+                transform             : 'translate(-50%, -50%)'
+            }
+        };
         console.log('%c Rendering App...','background: #222; color: red')
         console.log('%c App state ','background: #222; color: #bada55', this.state);
         let enabledFilters = this.state.filters.filter((item)=>item.enabled===true);
@@ -435,6 +449,20 @@ export default class App extends Component {
                     afterOpenModal = {this.afterOpenModal}
                     modalRepoName = {this.state.modalRepoName}
                 /> : null}
+                </div>
+                <div>
+                    <Modal
+                        isOpen={this.state.modalIsOpen}
+                        contentLabel="Card Modal Example"
+                        onRequestClose={this.closeModal}
+                        style={customStyles}
+                    >
+                        <RepoDialog
+                            repos  = {filteredRepos}
+                            modalRepoName = {this.state.modalRepoName}
+                            closeModal = {this.closeModal}
+                        />
+                    </Modal>
                 </div>
                 <div>
                 </div>

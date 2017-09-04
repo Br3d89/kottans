@@ -3,14 +3,14 @@ import path from 'path';
 
 
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-    template: './src/index.html',
+    template: './source/index.html',
     filename: 'index.html',
     inject: 'body'
 });
 
 module.exports = {
     entry:{
-        index: './src/index.js',
+        index: './source/index.js',
     },
     output: {
         filename: '[name].bundle.js',

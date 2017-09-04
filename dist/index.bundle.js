@@ -14360,7 +14360,7 @@ var HTMLDOMPropertyConfig = {
     controls: HAS_BOOLEAN_VALUE,
     coords: 0,
     crossOrigin: 0,
-    data: 0, // For `<object />` acts as `src`.
+    data: 0, // For `<object />` acts as `source`.
     dateTime: 0,
     'default': HAS_BOOLEAN_VALUE,
     defer: HAS_BOOLEAN_VALUE,
