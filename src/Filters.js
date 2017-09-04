@@ -1,4 +1,6 @@
 import React from 'react';
+// import filterStyles from './filter.css'
+import styles from './filter.css'
 
 const Filters = (props) => {
     console.log('Rendering Filters...')
@@ -25,7 +27,19 @@ const Filters = (props) => {
         const id = target.id;
         const value = target.value;
         updateFilter(id,value,enabled);
-    }
+     }
+     
+     const handleSpanClick = (event) => {
+        console.log('handleSpanClick');
+        const target = event.target;
+        const value= target.getAttribute("value")
+        console.log(value)
+        const enabled = !!value;
+        const id = target.id;
+        updateFilter(id,value,enabled);
+     }
+     
+     
 
     const langSelect = languages.map((value,index)=>{
         return (<option
@@ -37,16 +51,17 @@ const Filters = (props) => {
     })
 
 
-    return (<div>
-        <div>
+    return (
+        <div className={styles.filterBlockContainer}>
+        <div className={styles.filterBlockView}>
         <label htmlFor="hasIssues">Has issues</label>
         <input id="0"
                type="checkbox"
                checked={filters[0].enabled}
                name="has_issues"
                onChange={handleInputChange}/>
-    </div>
-        <div>
+        </div>
+        <div className={styles.filterBlockView}>
             <label htmlFor="hasTopics">Has topics</label>
             <input id="1"
                    type="checkbox"
@@ -54,7 +69,7 @@ const Filters = (props) => {
                    name="has_topics"
                    onChange={handleInputChange}/>
         </div>
-        <div>
+        <div className={styles.filterBlockView}>
             <label htmlFor="starred">Starred >= </label>
             <input id="2"
                    type="text"
@@ -62,7 +77,7 @@ const Filters = (props) => {
                    name="starred"
                    onChange={handleTextInputChange}/>
         </div>
-        <div>
+         <div className={styles.filterBlockView}>
             <label htmlFor="updated">Updated after date </label>
             <input id="3"
                    type="datetime-local"
@@ -70,23 +85,23 @@ const Filters = (props) => {
                    name="updated"
                    onChange={handleTextInputChange}/>
         </div>
-        <div>
+         <div className={styles.filterBlockView}>
          <label htmlFor="type">Repo type </label>
          <select id="4" size="1" onChange={handleTextInputChange}>
-            <option label=" "></option>
-            <option defaultValue = {filters[4].enabled} value="all">All</option>
-            <option defaultValue = {filters[4].enabled} value="forked">Forked</option>
-            <option defaultValue = {filters[4].enabled} value="sources">Sources</option>
+            <option  value="all">All</option>
+            <option  value="forked">Forked</option>
+            <option  value="sources">Sources</option>
         </select>
         </div>
-        <div>
+         <div className={styles.filterBlockView}>
             <label htmlFor="language">Language </label>
             <select id="5" size="1" onChange={handleTextInputChange}>
                 <option label=" "></option>
                 {langSelect}
             </select>
+            </div>
         </div>
-    </div>)
+    )
 };
 
 

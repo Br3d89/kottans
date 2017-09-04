@@ -1,0 +1,12 @@
+.sortContainer {
+    border:2px solid red;
+}
+
+.sortBlockView {
+    display: inline-block;
+    border: 2px solid yellow;
+}
+
+.sortBlockContainer {
+    border:2px solid green;
+}

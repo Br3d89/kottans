@@ -22461,6 +22461,8 @@ var _Filters2 = _interopRequireDefault(_Filters);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -22477,6 +22479,7 @@ var App = function (_Component) {
 
         _this.state = {
             repos: [],
+            languages: [],
             searchName: '',
             showFilters: false,
             showResults: false,
@@ -22495,6 +22498,21 @@ var App = function (_Component) {
                 enabled: false,
                 type: 'text',
                 value: '0'
+            }, {
+                name: 'updated',
+                enabled: false,
+                type: 'datetime-local',
+                value: ''
+            }, {
+                name: 'type',
+                enabled: false,
+                type: 'select',
+                value: ''
+            }, {
+                name: 'language',
+                enabled: false,
+                type: 'select',
+                value: ''
             }]
 
         };
@@ -22502,14 +22520,16 @@ var App = function (_Component) {
         _this.filterRepos = _this.filterRepos.bind(_this);
         _this.updateFilter = _this.updateFilter.bind(_this);
         _this.clearFilters = _this.clearFilters.bind(_this);
+        _this.languageArr = _this.languageArr.bind(_this);
         return _this;
     }
 
     _createClass(App, [{
         key: 'updateRepos',
-        value: function updateRepos(newRepos) {
+        value: function updateRepos(repos) {
             console.log('updateRepos func');
-            this.setState({ repos: newRepos, showFilters: true, showResults: true });
+            var languages = this.languageArr(repos);
+            this.setState({ repos: repos, languages: languages, showFilters: true, showResults: true });
             this.clearFilters();
         }
     }, {
@@ -22520,8 +22540,7 @@ var App = function (_Component) {
             filters[id].enabled = enabled;
             filters[id].value = value;
             this.setState({ filters: filters });
-            console.log('Updatefilter filters = ', filters);
-            console.log('%c Updatefilter filters ' + filters, 'background: #222; color: #bada55');
+            console.log('%c Updatefilter filters', 'background: #222; color: #bada55', filters);
         }
     }, {
         key: 'clearFilters',
@@ -22542,6 +22561,21 @@ var App = function (_Component) {
                 enabled: false,
                 type: 'text',
                 value: '0'
+            }, {
+                name: 'updated',
+                enabled: false,
+                type: 'datetime-local',
+                value: ''
+            }, {
+                name: 'type',
+                enabled: false,
+                type: 'select',
+                value: ''
+            }, {
+                name: 'language',
+                enabled: false,
+                type: 'select',
+                value: ''
             }];
             var filters = defaultFilters;
             this.setState({ filters: filters });
@@ -22574,6 +22608,32 @@ var App = function (_Component) {
                             return item.stargazers_count >= filtersArray[i].value;
                         });
                         break;
+                    case 'updated':
+                        console.log('updated before case, newRepos= ', newRepos);
+                        newRepos = newRepos.filter(function (item) {
+                            return Date.parse(item.updated_at) >= Date.parse(filtersArray[i].value);
+                        });
+                        break;
+                    case 'type':
+                        console.log('type before case, newRepos= ', newRepos);
+                        newRepos = newRepos.filter(function (item) {
+                            switch (filtersArray[i].value) {
+                                case 'forked':
+                                    return item.fork === true;
+                                case 'sources':
+                                    return item.fork === false;
+                                default:
+                                    return true;
+                            }
+                            item.fork === filtersArray[i].value;
+                        });
+                        break;
+                    case 'language':
+                        console.log('language before case, newRepos= ', newRepos);
+                        newRepos = newRepos.filter(function (item) {
+                            return item.language === filtersArray[i].value;
+                        });
+                        break;
                 }
             };
 
@@ -22584,10 +22644,23 @@ var App = function (_Component) {
             return newRepos;
         }
     }, {
+        key: 'languageArr',
+        value: function languageArr(newRepos) {
+            var langArr = [].concat(_toConsumableArray(new Set(newRepos.map(function (value) {
+                return value.language;
+            }).filter(function (value) {
+                return value != null;
+            }))));
+            //console.log('%c Language array ','background: #222; color: #bada55',alllangs);
+            //let langArr = [...new Set(alllangs)];
+            //console.log('%c Language array ','background: #222; color: #bada55',langArr);
+            return langArr;
+        }
+    }, {
         key: 'render',
         value: function render() {
-            console.log('Rendering App...');
-            console.log('App state ', this.state);
+            console.log('%c Rendering App...', 'background: #222; color: red');
+            console.log('%c App state ', 'background: #222; color: #bada55', this.state);
             var enabledFilters = this.state.filters.filter(function (item) {
                 return item.enabled === true;
             });
@@ -22611,7 +22684,8 @@ var App = function (_Component) {
                     null,
                     this.state.showFilters ? _react2.default.createElement(_Filters2.default, {
                         updateFilter: this.updateFilter,
-                        filters: this.state.filters
+                        filters: this.state.filters,
+                        languages: this.state.languages
                     }) : null
                 ),
                 _react2.default.createElement(
@@ -22658,6 +22732,12 @@ var Search = function Search(props) {
         clearFilters = props.clearFilters;
 
     var searchInput = '';
+    var submitByEnter = function submitByEnter(event) {
+        if (event.keyCode == 13) {
+            document.getElementById("search_btn").click();
+            return false;
+        }
+    };
 
     var search = function search() {
         console.log('Searching...' + searchInput.value);
@@ -22673,6 +22753,8 @@ var Search = function Search(props) {
                 alert(xhr.status + ': ' + xhr.statusText);
             } else {
                 var data = JSON.parse(xhr.responseText);
+                //console.log(xhr.getResponseHeader("Link"));
+                //xhr.open('GET', `https://api.github.com/users/${searchInput.value}/repos?per_page=100`);
                 updateRepos(data);
             }
         };
@@ -22690,7 +22772,7 @@ var Search = function Search(props) {
         ),
         _react2.default.createElement('input', { id: 'search', type: 'text', ref: function ref(input) {
                 searchInput = input;
-            } }),
+            }, onKeyDown: submitByEnter }),
         _react2.default.createElement(
             'button',
             { id: 'search_btn', onClick: search },
@@ -22793,12 +22875,11 @@ var _Card2 = _interopRequireDefault(_Card);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Result = function Result(props) {
-    console.log('Rendering Result...');
+    console.log(('%c Rendering Result...', 'background: #222; color: red'));
     var repos = props.repos;
 
     console.log('Result ', repos);
     var results = repos.map(function (repo, index) {
-        //console.log(`${index} ${repo.name} ${repo.description} ${repo.fork}`);
         repo.description = repo.description ? repo.description.slice(0, 20) + '...' : '';
         return _react2.default.createElement(_Card2.default, {
             id: index,
@@ -22914,14 +22995,27 @@ var _react = __webpack_require__(16);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _filter = __webpack_require__(191);
+
+var _filter2 = _interopRequireDefault(_filter);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Filters = function Filters(props) {
     console.log('Rendering Filters...');
     var updateFilter = props.updateFilter,
-        filters = props.filters;
+        filters = props.filters,
+        languages = props.languages;
 
     console.log('Filters filters = ', filters);
+    var testClass = {
+        border: '1px solid red'
+    };
+    var sortStyle = {
+        border: '1px solid blue',
+        borderWidth: '2px',
+        width: '300px'
+    };
 
     var handleInputChange = function handleInputChange(event) {
         console.log('handleInputChange');
@@ -22937,63 +23031,722 @@ var Filters = function Filters(props) {
     var handleTextInputChange = function handleTextInputChange(event) {
         console.log('handleInputChange');
         var target = event.target;
+        //console.log(Date.parse(target.value))
         var enabled = !!target.value;
         var name = target.name;
         var id = target.id;
         var value = target.value;
-        console.log(value);
         updateFilter(id, value, enabled);
     };
 
+    var langSelect = languages.map(function (value, index) {
+        return _react2.default.createElement(
+            'option',
+            {
+                key: value + index,
+                value: value,
+                defaultValue: filters[5].enabled
+            },
+            value
+        );
+    });
+
     return _react2.default.createElement(
         'div',
-        null,
+        { className: _filter2.default.filterContainer },
         _react2.default.createElement(
             'div',
-            null,
+            { className: 'filterBlockContainer' },
             _react2.default.createElement(
-                'label',
-                { htmlFor: 'hasIssues' },
-                'Has issues'
+                'div',
+                { className: 'filterBlockView' },
+                _react2.default.createElement(
+                    'label',
+                    { htmlFor: 'hasIssues' },
+                    'Has issues'
+                ),
+                _react2.default.createElement('input', { id: '0',
+                    type: 'checkbox',
+                    checked: filters[0].enabled,
+                    name: 'has_issues',
+                    onChange: handleInputChange })
             ),
-            _react2.default.createElement('input', { id: '0',
-                type: 'checkbox',
-                checked: filters[0].enabled,
-                name: 'has_issues',
-                onChange: handleInputChange })
-        ),
-        _react2.default.createElement(
-            'div',
-            null,
             _react2.default.createElement(
-                'label',
-                { htmlFor: 'hasTopics' },
-                'Has topics'
+                'div',
+                { className: _filter2.default.filterBlockView },
+                _react2.default.createElement(
+                    'label',
+                    { htmlFor: 'hasTopics' },
+                    'Has topics'
+                ),
+                _react2.default.createElement('input', { id: '1',
+                    type: 'checkbox',
+                    checked: filters[1].enabled,
+                    name: 'has_topics',
+                    onChange: handleInputChange })
             ),
-            _react2.default.createElement('input', { id: '1',
-                type: 'checkbox',
-                checked: filters[1].enabled,
-                name: 'has_topics',
-                onChange: handleInputChange })
-        ),
-        _react2.default.createElement(
-            'div',
-            null,
             _react2.default.createElement(
-                'label',
-                { htmlFor: 'starred' },
-                'Starred >= '
+                'div',
+                { className: _filter2.default.filterBlockView },
+                _react2.default.createElement(
+                    'label',
+                    { htmlFor: 'starred' },
+                    'Starred >= '
+                ),
+                _react2.default.createElement('input', { id: '2',
+                    type: 'text',
+                    value: filters[2].value,
+                    name: 'starred',
+                    onChange: handleTextInputChange })
             ),
-            _react2.default.createElement('input', { id: '2',
-                type: 'text',
-                value: filters[2].value,
-                name: 'starred',
-                onChange: handleTextInputChange })
+            _react2.default.createElement(
+                'div',
+                { className: _filter2.default.filterBlockView },
+                _react2.default.createElement(
+                    'label',
+                    { htmlFor: 'updated' },
+                    'Updated after date '
+                ),
+                _react2.default.createElement('input', { id: '3',
+                    type: 'datetime-local',
+                    value: filters[3].value,
+                    name: 'updated',
+                    onChange: handleTextInputChange })
+            ),
+            _react2.default.createElement(
+                'div',
+                { className: _filter2.default.filterBlockView },
+                _react2.default.createElement(
+                    'label',
+                    { htmlFor: 'type' },
+                    'Repo type '
+                ),
+                _react2.default.createElement(
+                    'select',
+                    { id: '4', size: '1', onChange: handleTextInputChange },
+                    _react2.default.createElement('option', { label: ' ' }),
+                    _react2.default.createElement(
+                        'option',
+                        { defaultValue: filters[4].enabled, value: 'all' },
+                        'All'
+                    ),
+                    _react2.default.createElement(
+                        'option',
+                        { defaultValue: filters[4].enabled, value: 'forked' },
+                        'Forked'
+                    ),
+                    _react2.default.createElement(
+                        'option',
+                        { defaultValue: filters[4].enabled, value: 'sources' },
+                        'Sources'
+                    )
+                )
+            ),
+            _react2.default.createElement(
+                'div',
+                { className: _filter2.default.filterBlockView },
+                _react2.default.createElement(
+                    'label',
+                    { htmlFor: 'language' },
+                    'Language '
+                ),
+                _react2.default.createElement(
+                    'select',
+                    { id: '5', size: '1', onChange: handleTextInputChange },
+                    _react2.default.createElement('option', { label: ' ' }),
+                    langSelect
+                )
+            )
         )
     );
 };
-
+// import filterStyles from './filter.css'
 exports.default = Filters;
+
+/***/ }),
+/* 191 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(192);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(194)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../node_modules/css-loader/index.js?modules&importLoaders=1!./filter.css", function() {
+			var newContent = require("!!../node_modules/css-loader/index.js?modules&importLoaders=1!./filter.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 192 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(193)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".eShT946wSk1vwmSA6h3WY {\r\n    border:2px solid red;\r\n}\r\n\r\n.qkg_IKOIhMsmJ3Xh2gXUs {\r\n    display: inline-block;\r\n    border: 2px solid yellow;\r\n}\r\n\r\n._1AWhZqm9fk39w88avaXDpY {\r\n    border:2px solid green;\r\n}\r\n", ""]);
+
+// exports
+exports.locals = {
+	"filterContainer": "eShT946wSk1vwmSA6h3WY",
+	"filterBlockView": "qkg_IKOIhMsmJ3Xh2gXUs",
+	"filterBlockContainer": "_1AWhZqm9fk39w88avaXDpY"
+};
+
+/***/ }),
+/* 193 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 194 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(selector) {
+		if (typeof memo[selector] === "undefined") {
+			memo[selector] = fn.call(this, selector);
+		}
+
+		return memo[selector]
+	};
+})(function (target) {
+	return document.querySelector(target)
+});
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(195);
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton) options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+	if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	options.attrs.type = "text/css";
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = options.transform(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+/* 195 */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
 
 /***/ })
 /******/ ]);

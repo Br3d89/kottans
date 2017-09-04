@@ -5,6 +5,12 @@ const Search = (props) => {
     console.log('Rendering Search...')
     const { updateRepos,clearFilters  } = props;
     let searchInput='';
+    const submitByEnter = (event) => {
+        if (event.keyCode == 13) {
+            document.getElementById("search_btn").click();
+            return false;
+        }
+    }
 
     const search= () => {
         console.log(`Searching...${searchInput.value}`);
@@ -35,7 +41,7 @@ const Search = (props) => {
     return (
         <div>
             <label htmlFor="search">Please enter user or organisation: </label>
-            <input id="search" type="text" ref={(input)=>{searchInput=input}} />
+            <input id="search" type="text" ref={(input)=>{searchInput=input}} onKeyDown={submitByEnter} />
             <button id="search_btn" onClick={search}>Find</button>
         </div>
     );

@@ -1,0 +1,14 @@
+.appContainer {
+  border: 3px solid black;
+}
+
+.searchContainer {
+ border:1px solid darkred;
+}
+
+.filterContainer {
+    border: 1px solid greenyellow;
+}
+.resultContainer {
+    border: 1px solid blueviolet;
+}

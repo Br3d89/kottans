@@ -30,5 +30,9 @@ module.exports = {
             {
                 test:/\.css$/,
                 exclude: /node_modules/,
-                loaders:['style-loader','css-loader']}]},    plugins: [HtmlWebpackPluginConfig]
+                //loaders:['style-loader','css-loader']}]},    plugins: [HtmlWebpackPluginConfig]
+                loaders:"style-loader!css-loader?modules&importLoaders=1"
+            }
+            ]
+    },    plugins: [HtmlWebpackPluginConfig]
 }
