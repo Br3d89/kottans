@@ -1,0 +1,258 @@
+.appContainer {
+    border-radius: 45px;
+    border: 3px solid darkgrey;
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    width: 10%;
+    min-width: 1200px;
+    height: 90%;
+    margin: auto;
+    margin-top:50px;
+    --box-shadow-color: lightgrey;
+    box-shadow: 0 0 255px 255px var(--box-shadow-color);
+    transition: 1s;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.appContainer.__noData {
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+
+.showMoreBtn {
+    margin-top:20px;
+    border-radius: 15px;
+    width:100px;
+    heigth:30px;
+    animation-name: more;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    font-size:100%;
+
+}
+
+.showMoreBtn:hover {
+    width:150px;
+    heigth:50px;
+    font-size:120%;
+}
+
+.searchContainer {
+    text-align: center;
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.searchLogo {
+    vertical-align:bottom;
+    width:70px;
+    height:70px;
+    margin-left:20px;
+    /*filter: blur(2px);*/
+    background: #cca92c;
+    border-radius: 50%;
+    animation: pulse 2s 5;
+}
+
+.searchLogo:hover {
+    filter: blur(0.7px);
+    animation:none
+}
+
+
+.searchLogo:before{
+    background: #f00;
+    border-top-left-radius: 50px 100px;
+    border-top-right-radius: 50px 100px;
+    content: "";
+    display: block;
+    height: 140px;
+    position: absolute;
+    width: 100px;
+}
+
+.searchLogo:after{
+    background: #f00;
+    border-top-left-radius: 50px 100px;
+    border-top-right-radius: 50px 100px;
+    content: "";
+    display: block;
+    height: 140px;
+    margin-left: 42px;
+    width: 100px;
+}
+
+@-webkit-keyframes pulse{
+    0%{
+        -webkit-transform: scale(0.95);
+    }
+
+    50%{
+        -webkit-transform: scale(1);
+    }
+    100%{
+        -webkit-transform: scale(0.95);
+    }
+}
+
+
+.searchInput {
+    width: 180px;
+    font-size:160%;
+    border-radius: 35px;
+    outline: none;
+    padding:0 25px 0 25px;
+    height:70px;
+    color:#cca92c;
+    border: 2px solid grey;
+    background-color:white;
+    text-align: center;
+    /*filter: blur(2px);*/
+}
+
+.searchInput:hover {
+    /*filter: blur(0.3px);*/
+    border: 2px solid dimgrey;
+    width: 340px;
+    height:70px;
+    font-size:250%;
+    filter: blur(0.3px);
+}
+
+.searchInput:focus {
+    border: 2px solid dimgrey;
+    width: 340px;
+    height:70px;
+    font-size:250%;
+    filter: blur(0.3px);
+}
+
+.searchInput:focus::-webkit-input-placeholder { color:transparent; }
+
+
+
+.searchBtn {
+    display:none;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
+
+
+.resultContainer {
+    text-align: center;
+    width: 95%;
+    height: 65%;
+    margin: auto;
+    overflow: auto;
+}
+
+
+.cardContainer {
+    margin: 5px;
+    border:2px solid darkgrey;
+    border-radius: 15px;
+    transition: 0.1s;
+    display:inline-block;
+
+}
+.cardContainer:hover {
+    background-color: lightgray;
+}
+
+.ulResultContainer {
+    list-style-type: none;
+    text-align: left;
+    padding: 10px;
+    margin: 5px;
+}
+
+
+.sortContainer {
+}
+
+.sortBlockView {
+    display: inline-block;
+}
+
+.sortBlockContainer {
+    text-align: center;
+    padding: 5px;
+    border-radius: 15px;
+    margin: 0    auto 5px auto ;
+    --box-shadow-color: lightgrey;
+    box-shadow: 0 0 3px 3px var(--box-shadow-color);
+    width:25%;
+}
+
+/*.sortBlockContainer:hover {*/
+    /*background-color: lightgray;*/
+/*}*/
+
+.sortOrderBtn {
+}
+
+
+
+.filterContainer {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.filterBlockView {
+    display: inline-block;
+    border-radius: 15px;
+    margin: 5px 5px 5px 5px;
+    padding: 5px;
+    --box-shadow-color: lightgrey;
+    box-shadow: 0 0 3px 3px var(--box-shadow-color);
+}
+
+.filterBlockView input, select {
+    border-radius: 15px;
+    padding:0 5px 0 5px;
+}
+
+
+.filterBlockView:hover {
+    background-color: lightgrey;
+}
+
+.filterBlockContainer {
+    list-style-type: none;
+    text-align: center;
+    padding-left: 0;
+    margin: 10px auto;
+
+}
+
+.hasIssuesFilter {
+    text-align: center;
+    vertical-align: middle;
+    background-image: url('../static/asc.png');
+}
+
+.hasTopicsFilter {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.starredFilter {
+    width:50px;
+}
+
+.result {
+    list-style-type: none;
+}
+
+.avatars {
+    border-radius: 50%;
+    max-width: 100px;
+}

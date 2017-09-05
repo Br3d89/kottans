@@ -30,9 +30,17 @@ module.exports = {
             {
                 test:/\.css$/,
                 exclude: /node_modules/,
-                //loaders:['style-loader','css-loader']}]},    plugins: [HtmlWebpackPluginConfig]
+                //loaders:['style-loader'],
                 loaders:"style-loader!css-loader?modules&importLoaders=1"
-            }
+            },
+            {
+                test: /\.png$|\.gif$/,
+                loader: 'url-loader?limit=100000'
+            },
+            {
+                test: /\.jpg$/,
+                loader: 'file-loader'
+            },
             ]
     },    plugins: [HtmlWebpackPluginConfig]
 }

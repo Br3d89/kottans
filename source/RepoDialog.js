@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import styles from './repoDialog.css'
-import Modal from 'react-modal';
+import styles from './styles.css'
 import fetch from 'isomorphic-fetch'
 
 export default class RepoDialog extends Component {
@@ -122,55 +121,12 @@ export default class RepoDialog extends Component {
     }
 
 
-    // topPr = (callback) => {
-    //     console.log('TopPr function...')
-    //     let result;
-    //     console.log(modalRepoName)
-    //     const repo = repos.filter((item) => item.name === modalRepoName)[0];
-    //     console.log('Repo url=', repo.url)
-    //     let pulls_url = repo.url + '/pulls?sort=popularity&direction=desc&per_page=5';
-    //     console.log(pulls_url)
-    //     let xhr = new XMLHttpRequest();
-    //     xhr.open('GET', pulls_url);
-    //     xhr.send();
-    //     xhr.onreadystatechange = function () {
-    //         if (xhr.readyState != 4) return;
-    //
-    //         if (xhr.status != 200) {
-    //             alert(xhr.status + ': ' + xhr.statusText);
-    //         } else {
-    //             let data = JSON.parse(xhr.responseText)
-    //             console.log(data, data.length)
-    //             if (data.length) {
-    //                 console.log('Ne uspel 1')
-    //                 result = data.map((item, index) => {
-    //                     return (
-    //                         <li key={'liPr' + index}><a href={item.url}>{item.title}</a></li>
-    //                     )
-    //                 })
-    //                 console.log(' v konec ne uspel', result)
-    //                 callback.apply(result);
-    //
-    //             }
-    //             else {
-    //                 result = '<li>No one PR found</li>'
-    //
-    //             }
-    //
-    //
-    //         }
-    //     }
-    //
-    // }
-
-
-
     render() {
         console.log('Rendering RepoDialog component...', this.state)
         this.state.allReady ? console.log('Allready rendering') : this.getDialogData();
         return (
             <div>
-        {this.state.allReady ? this.renderDialogData() : <img src="/source/loading.gif"/>}
+        {this.state.allReady ? this.renderDialogData() : <img src="/static/loading.gif"/>}
         </div>
         )
     }

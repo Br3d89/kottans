@@ -3,7 +3,7 @@ import Search from './Search';
 import Result from './Result';
 import Filters from './Filters';
 import Sort from './Sort';
-import styles from './app.css'
+import styles from './styles.css'
 import Modal from 'react-modal';
 import RepoDialog from './RepoDialog'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
@@ -13,13 +13,19 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            error: false,
             repos: [],
             languages: [],
             searchName: '',
             showFilters: false,
             showResults: false,
             showSort: false,
+            showMoreBtn: false,
+            showFilterContainer:false,
             modalIsOpen: false,
+            nextLink:'',
+            searchString:'',
+            rendModal: false,
             modalRepoName:'',
             filters: [
                 {
@@ -108,14 +114,59 @@ export default class App extends Component {
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.loadMore = this.loadMore.bind(this);
+        this.loadRepos = this.loadRepos.bind(this);
     }
 
-    updateRepos(repos){
-        console.log('updateRepos func');
-        let languages = this.languageArr(repos);
-        this.setState({repos,languages,showFilters:true,showResults:true, showSort:true});
-        this.clearFiltersSorts()
+    loadRepos= (searchString, action='loadRepos') => {
+        console.log(`Searching...${searchString}`);
+        let url='';
+        switch(action) {
+            case 'loadMore':
+                url = searchString;
+                break;
+            case 'loadRepos':
+                url = `https://api.github.com/users/${searchString}/repos?per_page=100`
+        }
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.setRequestHeader('Accept', 'application/vnd.github.mercy-preview+json');
+        xhr.send();
+        let self = this
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
+
+            if (xhr.status != 200) {
+                // alert(xhr.status + ': ' + xhr.statusText);
+                self.setState({error: true})
+                setTimeout(() => {
+                    self.setState({error: false})
+                }, 2000)
+            } else {
+                let data = JSON.parse(xhr.responseText);
+                let nextUrl = xhr.getResponseHeader("Link");
+                self.updateRepos(data,nextUrl,searchString);
+
+            }
+        }
+
+
+
     }
+
+    updateRepos(repos, nextUrl, searchString){
+        console.log('updateRepos func, repos= ',repos);
+        const nextLink = nextUrl ? nextUrl.split(',')[0].split(';')[0].slice(1, -1) : '';
+        const oldRepos = this.state.repos;
+        const newRepos = (this.state.searchString === searchString) || (this.state.nextLink === nextLink) ? repos: oldRepos.concat(repos);
+        let languages = (repos.length >= 1) ? this.languageArr(repos): [];
+        const showMoreBtn = nextLink.length ? true : false;
+        const showFilterContainer = (repos.length >= 1) ? true : false;
+        const showResults = (repos.length >= 1) ? true : false;
+        this.setState({repos:newRepos,languages,showMoreBtn,showResults,showFilterContainer,nextLink,searchString});
+        //this.clearFiltersSorts()
+    }
+
 
     updateFilter(id,value,enabled){
         console.log('updateFilter func value= ',value, id)
@@ -393,6 +444,12 @@ export default class App extends Component {
         this.setState({modalIsOpen: false});
     }
 
+    loadMore(){
+        let action = 'loadMore';
+        let searchString = this.state.nextLink;
+        this.loadRepos(searchString,action);
+    }
+
 
     render(){
         const customStyles = {
@@ -415,58 +472,60 @@ export default class App extends Component {
         console.log('filteredRepos ', filteredRepos);
         //if error change null to []
         return (
-            <div className={styles.appContainer}>
-            <div id='search' className={styles.searchContainer}>
-                <Search
-                updateRepos = {this.updateRepos}
-                clearFilters = {this.clearFilters}
-                />
-            </div>
-                <div className={styles.filterContainer}>
-                <div id="filters">
-                    {this.state.showFilters ? <Filters
-                        updateFilter = {this.updateFilter}
-                        filters = {this.state.filters}
-                        languages = {this.state.languages}
-                    /> : null}
-                </div>
-                <div id="sort">
-                    {this.state.showSort ? <Sort
-                        updateSort = {this.updateSort}
-                        updateOrder = {this.updateOrder}
-                        sorts= {this.state.sorts.sortType}
-                        order={this.state.sorts.sortOrderType}
-                    /> : null}
-                </div>
-                </div>
+                <div className={[styles.appContainer, !this.state.repos.length ? styles.__noData : ''].join(' ')}>
+                    <Search
+                    updateRepos = {this.updateRepos}
+                    clearFilters = {this.clearFilters}
+                    loadRepos = {this.loadRepos}
+                    />
+                    {this.state.showFilterContainer ?
+                         <div className={styles.filterContainer}>
+                             <Filters
+                                updateFilter = {this.updateFilter}
+                                filters = {this.state.filters}
+                                languages = {this.state.languages}
+                             />
+                             <Sort
+                                 updateSort = {this.updateSort}
+                                 updateOrder = {this.updateOrder}
+                                 sorts= {this.state.sorts.sortType}
+                                 order={this.state.sorts.sortOrderType}
+                             />
+                    </div>: null}
+              {this.state.showResults ?
                 <div id='result' className={styles.resultContainer}>
-                {this.state.showResults ? <Result
-                    repos  = {filteredRepos}
-                    openModal = {this.openModal}
-                    modalIsOpen = {this.state.modalIsOpen}
-                    subtitleApp = {this.state.subtitle}
-                    closeModal = {this.closeModal}
-                    afterOpenModal = {this.afterOpenModal}
-                    modalRepoName = {this.state.modalRepoName}
-                /> : null}
+                     <Result
+                        repos  = {filteredRepos}
+                        openModal = {this.openModal}
+                        modalIsOpen = {this.state.modalIsOpen}
+                        subtitleApp = {this.state.subtitle}
+                        closeModal = {this.closeModal}
+                        afterOpenModal = {this.afterOpenModal}
+                        modalRepoName = {this.state.modalRepoName}
+                    />
+                    </div>: null}
+
+                    {this.state.error && (
+                        <div>
+                            error motherfucker
+                        </div>
+                    )}
+                        <Modal
+                            isOpen={this.state.modalIsOpen}
+                            contentLabel="Card Modal Example"
+                            onRequestClose={this.closeModal}
+                            style={customStyles}
+                        >
+                            <RepoDialog
+                                repos  = {filteredRepos}
+                                modalRepoName = {this.state.modalRepoName}
+                                closeModal = {this.closeModal}
+                            />
+                        </Modal>
+                    {this.state.showMoreBtn ?
+                         <button value="Show more" className={styles.showMoreBtn} onClick={this.loadMore}>Show more</button>
+                        : null}
                 </div>
-                <div>
-                    <Modal
-                        isOpen={this.state.modalIsOpen}
-                        contentLabel="Card Modal Example"
-                        onRequestClose={this.closeModal}
-                        style={customStyles}
-                    >
-                        <RepoDialog
-                            repos  = {filteredRepos}
-                            modalRepoName = {this.state.modalRepoName}
-                            closeModal = {this.closeModal}
-                        />
-                    </Modal>
-                </div>
-                <div>
-                </div>
-            </div>
-        );
+            );
     }
 }

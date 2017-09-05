@@ -4,7 +4,7 @@
   "description": "\"# kottans\" \r test",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -p",
     "dev-server": "webpack-dev-server"
   },
   "repository": {
@@ -25,15 +25,18 @@
     "babel-preset-stage-2": "^6.24.1",
     "css-loader": "^0.28.7",
     "es2015": "0.0.0",
+    "file-loader": "^0.11.2",
     "html-webpack-plugin": "^2.30.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-modal": "^2.2.4",
     "react-router": "^4.2.0",
     "style-loader": "^0.18.2",
+    "url-loader": "^0.5.9",
     "webpack": "^3.5.5"
   },
   "devDependencies": {
+    "image-webpack-loader": "^3.4.1",
     "isomorphic-fetch": "^2.2.1",
     "react-router-dom": "^4.2.2"
   }

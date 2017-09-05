@@ -1,12 +1,18 @@
 import React from 'react';
-import styles from './sort.css'
+import styles from './styles.css'
 
 const Sort = (props) => {
     console.log('Rendering Sort...')
     const { updateSort, updateOrder, sorts, order  } = props;
     console.log('order=',order);
 
-    const orderBtnSrc = order? '/source/asc.png':'/source/desc.png'
+
+    const orderBtnSrc = order? '/static/asc.png':'/static/desc.png'
+
+
+
+
+
     const sortArray = sorts.map((value,index)=>{
         return (<option
             key={value.name+index}
@@ -34,13 +40,11 @@ const Sort = (props) => {
 
     return (
         <div className={styles.sortBlockContainer}>
-            <div className={styles.sortBlockView}>
-                <label htmlFor="type">Sort </label>
+                <label htmlFor="type">Sort by: </label>
                 <select id="sort" size="1" onChange={handleSortChange}>
                     {sortArray}
                 </select>
-                <button style={{display: 'inline-block'}} id="orderBtn" onClick={handleSortOrderChange}><img src={orderBtnSrc}/></button>
-        </div>
+            <img src={orderBtnSrc} id="orderBtn" onClick={handleSortOrderChange} style={{width:'9px', height:'10px',verticalAlign: 'center', marginLeft:'2px',backgroundColor:'red'}} className={styles.sortOrderBtn}/>
         </div>
     )
 };

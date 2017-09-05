@@ -1,6 +1,6 @@
 import React from 'react';
 // import filterStyles from './filter.css'
-import styles from './filter.css'
+import styles from './styles.css'
 
 const Filters = (props) => {
     console.log('Rendering Filters...')
@@ -52,55 +52,62 @@ const Filters = (props) => {
 
 
     return (
-        <div className={styles.filterBlockContainer}>
-        <div className={styles.filterBlockView}>
+        <ul className={styles.filterBlockContainer}>
+
+        <li className={styles.filterBlockView}>
         <label htmlFor="hasIssues">Has issues</label>
         <input id="0"
                type="checkbox"
                checked={filters[0].enabled}
                name="has_issues"
-               onChange={handleInputChange}/>
-        </div>
-        <div className={styles.filterBlockView}>
+               onChange={handleInputChange}
+               className={styles.hasIssuesFilter}/>
+        </li>
+
+        <li className={styles.filterBlockView}>
             <label htmlFor="hasTopics">Has topics</label>
             <input id="1"
                    type="checkbox"
                    checked={filters[1].enabled}
                    name="has_topics"
-                   onChange={handleInputChange}/>
-        </div>
-        <div className={styles.filterBlockView}>
+                   onChange={handleInputChange}
+                   className={styles.hasTopicsFilter}
+            />
+        </li>
+
+        <li className={styles.filterBlockView}>
             <label htmlFor="starred">Starred >= </label>
             <input id="2"
                    type="text"
                    value={filters[2].value}
                    name="starred"
-                   onChange={handleTextInputChange}/>
-        </div>
-         <div className={styles.filterBlockView}>
+                   onChange={handleTextInputChange}
+            className={styles.starredFilter}/>
+        </li>
+         <li className={styles.filterBlockView}>
             <label htmlFor="updated">Updated after date </label>
             <input id="3"
                    type="datetime-local"
                    value={filters[3].value}
                    name="updated"
                    onChange={handleTextInputChange}/>
-        </div>
-         <div className={styles.filterBlockView}>
+        </li>
+         <li className={styles.filterBlockView}>
          <label htmlFor="type">Repo type </label>
          <select id="4" size="1" onChange={handleTextInputChange}>
             <option  value="all">All</option>
             <option  value="forked">Forked</option>
             <option  value="sources">Sources</option>
         </select>
-        </div>
-         <div className={styles.filterBlockView}>
+        </li>
+         <li className={styles.filterBlockView}>
             <label htmlFor="language">Language </label>
             <select id="5" size="1" onChange={handleTextInputChange}>
                 <option label=" "></option>
                 {langSelect}
             </select>
-            </div>
-        </div>
+            </li>
+        </ul>
     )
 };
 
