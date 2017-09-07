@@ -22,6 +22,7 @@ const Sort = (props) => {
         )
     })
 
+
     const handleSortChange = (event) => {
         console.log('handleSortChange');
         const target = event.target;
@@ -41,7 +42,7 @@ const Sort = (props) => {
     return (
         <div className={styles.sortBlockContainer}>
                 <label htmlFor="type">Sort by: </label>
-                <select id="sort" size="1" onChange={handleSortChange}>
+                <select id="sort" size="1" onChange={handleSortChange} className={styles.sortArrow}>
                     {sortArray}
                 </select>
             <img src={orderBtnSrc} id="orderBtn" onClick={handleSortOrderChange} style={{width:'9px', height:'10px',verticalAlign: 'center', marginLeft:'2px',backgroundColor:'red'}} className={styles.sortOrderBtn}/>

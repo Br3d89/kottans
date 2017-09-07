@@ -1,6 +1,5 @@
 .appContainer {
     border-radius: 45px;
-    border: 3px solid darkgrey;
     position: relative;
     max-width: 90%;
     max-height: 90%;
@@ -17,6 +16,7 @@
 }
 
 .appContainer.__noData {
+    margin-top:20%;
     background: none;
     border: none;
     border-radius: 0;
@@ -46,6 +46,13 @@
     text-align: center;
     border-radius: 15px;
     padding: 10px;
+
+}
+
+.searchContainer.__noData {
+    background-color: lightgray;
+    --box-shadow-color: lightgrey;
+    box-shadow: 0 0 255px 255px var(--box-shadow-color);
 }
 
 .searchLogo {
@@ -60,8 +67,9 @@
 }
 
 .searchLogo:hover {
-    filter: blur(0.7px);
-    animation:none
+    /*filter: blur(0.7px);*/
+    animation:none;
+    cursor:pointer;
 }
 
 
@@ -103,21 +111,23 @@
 
 .searchInput {
     width: 180px;
-    font-size:160%;
+    font-size:180%;
     border-radius: 35px;
     outline: none;
     padding:0 25px 0 25px;
     height:70px;
     color:#cca92c;
-    border: 2px solid grey;
-    background-color:white;
+    /*border: 2px solid grey;*/
+    border: 2px solid gray;
     text-align: center;
     /*filter: blur(2px);*/
+    --box-shadow-color: lightgrey;
+    box-shadow: 0 0 3px 3px var(--box-shadow-color);
 }
 
 .searchInput:hover {
     /*filter: blur(0.3px);*/
-    border: 2px solid dimgrey;
+    /*border: 2px solid dimgrey;*/
     width: 340px;
     height:70px;
     font-size:250%;
@@ -125,13 +135,14 @@
 }
 
 .searchInput:focus {
-    border: 2px solid dimgrey;
+    /*border: 2px solid dimgrey;*/
     width: 340px;
     height:70px;
     font-size:250%;
     filter: blur(0.3px);
 }
 
+.searchInput::-webkit-input-placeholder { color:lightgray; }
 .searchInput:focus::-webkit-input-placeholder { color:transparent; }
 
 
@@ -149,20 +160,50 @@
     width: 95%;
     height: 65%;
     margin: auto;
+    margin-top:15px;
     overflow: auto;
+}
+
+.resultContainer::-webkit-scrollbar-track
+{
+    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);*/
+    background-color: lightgray;
+    border: 13px solid white;
+    border-radius: 15px;
+}
+
+.resultContainer::-webkit-scrollbar
+{
+    width: 27px;
+    /*background-color: green;*/
+}
+
+.resultContainer::-webkit-scrollbar-thumb
+{
+    background-color: #cca92c;
+    border-left:12px solid white;
+    border-right:12px solid white;
+    border-radius: 15px;
+}
+
+.resultContainer::-webkit-scrollbar-thumb:vertical {
+    height: 10px;
 }
 
 
 .cardContainer {
     margin: 5px;
-    border:2px solid darkgrey;
+    width:25%;
     border-radius: 15px;
-    transition: 0.1s;
+    transition: 0.8s;
     display:inline-block;
+    --box-shadow-color: lightgrey;
+    box-shadow: 0 0 3px 3px var(--box-shadow-color);
 
 }
 .cardContainer:hover {
     background-color: lightgray;
+    cursor:pointer;
 }
 
 .ulResultContainer {
@@ -197,12 +238,19 @@
 .sortOrderBtn {
 }
 
+.sortArrow {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
+}
 
 
 .filterContainer {
     width: 95%;
     margin-left: auto;
     margin-right: auto;
+    outline:none;
 }
 
 
@@ -246,6 +294,27 @@
 
 .starredFilter {
     width:50px;
+    outline: none;
+}
+
+.updatedDateFilter {
+    outline: none;
+}
+
+.repoTypeFilter {
+    outline: none;
+}
+
+.languageFilter {
+    outline: none;
+}
+
+.languageFilter  > select {
+    outline: none;
+}
+
+.languageFilter  > option {
+    outline: none;
 }
 
 .result {

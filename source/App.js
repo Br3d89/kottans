@@ -6,7 +6,7 @@ import Sort from './Sort';
 import styles from './styles.css'
 import Modal from 'react-modal';
 import RepoDialog from './RepoDialog'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import InfiniteScroll from 'react-infinite-scroller';
 
 
 export default class App extends Component {
@@ -27,6 +27,8 @@ export default class App extends Component {
             searchString:'',
             rendModal: false,
             modalRepoName:'',
+            scrollHasMore:false,
+            pageCount:0,
             filters: [
                 {
                     name: 'has_issues',
@@ -157,16 +159,18 @@ export default class App extends Component {
     updateRepos(repos, nextUrl, searchString){
         console.log('updateRepos func, repos= ',repos);
         const nextLink = nextUrl ? nextUrl.split(',')[0].split(';')[0].slice(1, -1) : '';
+        const nextLinkRel = nextUrl ? nextUrl.split(',')[0].split(';')[1].split('"')[1]: '';
+        const scrollHasMore = (nextLinkRel === 'first') || (nextLinkRel === "") ?  false: true;
+        // const pageCount = nextUrl ? parseInt(nextUrl.split(',')[1].split(';')[0].slice(-2,-1)): '';
         const oldRepos = this.state.repos;
         const newRepos = (this.state.searchString === searchString) || (this.state.nextLink === nextLink) ? repos: oldRepos.concat(repos);
         let languages = (repos.length >= 1) ? this.languageArr(repos): [];
         const showMoreBtn = nextLink.length ? true : false;
         const showFilterContainer = (repos.length >= 1) ? true : false;
         const showResults = (repos.length >= 1) ? true : false;
-        this.setState({repos:newRepos,languages,showMoreBtn,showResults,showFilterContainer,nextLink,searchString});
+        this.setState({repos:newRepos,languages,showMoreBtn,showResults,showFilterContainer,nextLink,searchString,scrollHasMore});
         //this.clearFiltersSorts()
     }
-
 
     updateFilter(id,value,enabled){
         console.log('updateFilter func value= ',value, id)
@@ -415,8 +419,6 @@ export default class App extends Component {
     return langArr;
     }
 
-
-
     openModal(evt) {
         console.log(evt.target.parentNode)
         console.log(evt.target.children)
@@ -444,11 +446,12 @@ export default class App extends Component {
         this.setState({modalIsOpen: false});
     }
 
-    loadMore(){
+    loadMore(page)    {
+        console.log('load more func if statement, page=', page)
         let action = 'loadMore';
         let searchString = this.state.nextLink;
-        this.loadRepos(searchString,action);
-    }
+        this.loadRepos(searchString, action);
+       }
 
 
     render(){
@@ -477,6 +480,7 @@ export default class App extends Component {
                     updateRepos = {this.updateRepos}
                     clearFilters = {this.clearFilters}
                     loadRepos = {this.loadRepos}
+                    reposLength = {this.state.repos.length}
                     />
                     {this.state.showFilterContainer ?
                          <div className={styles.filterContainer}>
@@ -493,17 +497,26 @@ export default class App extends Component {
                              />
                     </div>: null}
               {this.state.showResults ?
-                <div id='result' className={styles.resultContainer}>
-                     <Result
-                        repos  = {filteredRepos}
-                        openModal = {this.openModal}
-                        modalIsOpen = {this.state.modalIsOpen}
-                        subtitleApp = {this.state.subtitle}
-                        closeModal = {this.closeModal}
-                        afterOpenModal = {this.afterOpenModal}
-                        modalRepoName = {this.state.modalRepoName}
-                    />
-                    </div>: null}
+                  <div  className={styles.resultContainer} >
+                  <InfiniteScroll
+                      pageStart={0}
+                      loadMore={this.loadMore}
+                      hasMore={this.state.scrollHasMore}
+                      loader={<div className="loader">Loading ...</div>}
+                      useWindow={false}
+                      initialLoad={false}
+                  >
+                      <Result
+                          repos  = {filteredRepos}
+                          openModal = {this.openModal}
+                          modalIsOpen = {this.state.modalIsOpen}
+                          subtitleApp = {this.state.subtitle}
+                          closeModal = {this.closeModal}
+                          afterOpenModal = {this.afterOpenModal}
+                          modalRepoName = {this.state.modalRepoName}
+                      />
+                  </InfiniteScroll> </div>
+                  : null}
 
                     {this.state.error && (
                         <div>
@@ -522,9 +535,6 @@ export default class App extends Component {
                                 closeModal = {this.closeModal}
                             />
                         </Modal>
-                    {this.state.showMoreBtn ?
-                         <button value="Show more" className={styles.showMoreBtn} onClick={this.loadMore}>Show more</button>
-                        : null}
                 </div>
             );
     }

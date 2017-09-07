@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from './Card';
+import styles from './styles.css';
 
 const Result = (props) => {
     console.log('%c Rendering Result...', 'background: #222; color: red')
@@ -26,7 +27,7 @@ const Result = (props) => {
     console.log('Result= ',results)
 
         return (
-            <div>
+            <div id='result' >
                 {results}
             </div>
                 )

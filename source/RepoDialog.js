@@ -69,28 +69,25 @@ export default class RepoDialog extends Component {
     }
 
     renderLanguageTable() {
-        let topLanguage;
         const topLanguageArr = this.state.data[1];
-        if (Object.keys(topLanguageArr).length > 1) {
-            let items = Object.keys(topLanguageArr).map(function (key) {
+        let items = Object.keys(topLanguageArr).map(function (key) {
                 return [key, topLanguageArr[key]];
             });
-            let itemsKb = items.filter((item) => item[1] > 1000)
+        let itemsKb = items.filter((item) => item[1] > 1000)
             if (itemsKb.length) {
                 itemsKb.sort(function (first, second) {
                     return second[1] - first[1]
                 })
-                    console.log('ItemsKB=',itemsKb[0])
-                    topLanguage = itemsKb[0];
-                    console.log('TopLanguage=',topLanguage)
                 }
-            }
-        else {
-            topLanguage= Object.keys(topLanguageArr).map(function (key) {return [key, topLanguageArr[key]]})
-            }
+        console.log(itemsKb)
+        let topLanguages = items.map((value,index) => {
+            return (<li key={'languageLi'+index}>{value[0]} : {Math.round((parseFloat(value[1]))/1024) +' KB'}</li>)
+        })
         return (
-            topLanguage.length? <li key="languageLi">Language: {topLanguage[0]} value: {topLanguage[1]}</li> : null
-        )
+            <div>
+            {topLanguages}
+            </div>
+            )
     }
 
     renderTopCommented(){
@@ -112,6 +109,7 @@ export default class RepoDialog extends Component {
                 {this.state.linkToFork? <li key="linkToFork">link to fork's source:  <a href={this.renderLinkToFork()}>{this.renderLinkToFork()}</a></li>: null }
                 Contributors table:
                 {this.renderContribTable()}
+                Languages table:
                 {this.renderLanguageTable()}
                 Most commented:
                 {this.renderTopCommented()}

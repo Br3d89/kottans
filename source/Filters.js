@@ -82,7 +82,7 @@ const Filters = (props) => {
                    value={filters[2].value}
                    name="starred"
                    onChange={handleTextInputChange}
-            className={styles.starredFilter}/>
+                   className={styles.starredFilter}/>
         </li>
          <li className={styles.filterBlockView}>
             <label htmlFor="updated">Updated after date </label>
@@ -90,11 +90,12 @@ const Filters = (props) => {
                    type="datetime-local"
                    value={filters[3].value}
                    name="updated"
-                   onChange={handleTextInputChange}/>
+                   onChange={handleTextInputChange}
+                   className={styles.updatedDateFilter}/>
         </li>
          <li className={styles.filterBlockView}>
          <label htmlFor="type">Repo type </label>
-         <select id="4" size="1" onChange={handleTextInputChange}>
+         <select id="4" size="1" className={styles.repoTypeFilter} onChange={handleTextInputChange}>
             <option  value="all">All</option>
             <option  value="forked">Forked</option>
             <option  value="sources">Sources</option>
@@ -102,7 +103,7 @@ const Filters = (props) => {
         </li>
          <li className={styles.filterBlockView}>
             <label htmlFor="language">Language </label>
-            <select id="5" size="1" onChange={handleTextInputChange}>
+            <select id="5" size="1" className={styles.languageFilter} onChange={handleTextInputChange}>
                 <option label=" "></option>
                 {langSelect}
             </select>
