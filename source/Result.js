@@ -4,7 +4,10 @@ import styles from './styles.css';
 
 const Result = (props) => {
     console.log('%c Rendering Result...', 'background: #222; color: red')
-    const {repos, openModal, modalIsOpen, closeModal, afterOpenModal, modalRepoName} = props;
+    const {repos, openModal, modalIsOpen, closeModal, afterOpenModal, modalRepoName, updateHistory, searchString} = props;
+
+     // updateHistory(searchString);
+
 
 
         const results = repos.map((repo, index) => {

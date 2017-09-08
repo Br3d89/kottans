@@ -124,7 +124,7 @@ export default class RepoDialog extends Component {
         this.state.allReady ? console.log('Allready rendering') : this.getDialogData();
         return (
             <div>
-        {this.state.allReady ? this.renderDialogData() : <img src="/static/loading.gif"/>}
+        {this.state.allReady ? this.renderDialogData() : <img src={require('../static/loading.gif')}/>}
         </div>
         )
     }

@@ -3,11 +3,11 @@ import styles from './styles.css'
 
 const Sort = (props) => {
     console.log('Rendering Sort...')
-    const { updateSort, updateOrder, sorts, order  } = props;
+    const { updateSort, updateOrder, sorts, order, updateHistory  } = props;
     console.log('order=',order);
 
 
-    const orderBtnSrc = order? '/static/asc.png':'/static/desc.png'
+    const orderBtnSrc = require(order ? '../static/asc.png':'../static/desc.png')
 
 
 
@@ -26,9 +26,9 @@ const Sort = (props) => {
     const handleSortChange = (event) => {
         console.log('handleSortChange');
         const target = event.target;
-        const value= target.value;
-        console.log(value)
-        updateSort(value);
+        const value= 'sort='+target.value;
+        updateHistory(value)
+        // updateSort(value);
     }
 
     const handleSortOrderChange = () => {
