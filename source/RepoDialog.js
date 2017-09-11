@@ -85,13 +85,16 @@ export default class RepoDialog extends Component {
                     return second[1] - first[1]
                 })
                 }
-        console.log(itemsKb)
+                else {
+            return;
+            }
         let topLanguages = items.map((value,index) => {
             return (<li key={'languageLi'+index}>{value[0]} : {Math.round((parseFloat(value[1]))/1024) +' KB'}</li>)
         })
         return (
-            <div>
-            {topLanguages}
+            <div className={styles.dialogSpace}>
+                <span className={styles.dialogTitles}>Languages:</span>
+                {topLanguages}
             </div>
             )
     }
@@ -119,10 +122,7 @@ export default class RepoDialog extends Component {
                 {this.renderContribTable()}
                 </div>
 
-                <div className={styles.dialogSpace}>
-                <span className={styles.dialogTitles}>Languages:</span>
                 {this.renderLanguageTable()}
-                </div>
 
                 {this.state.data[2].length ?
                 <div className={styles.dialogSpace}>

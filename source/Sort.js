@@ -2,17 +2,8 @@ import React from 'react';
 import styles from './styles.css'
 
 const Sort = (props) => {
-    // console.log('Rendering Sort...')
-    const { updateSort, updateOrder, sorts, order, updateHistory  } = props;
-    // console.log('order=',order);
-
-
-    // const orderBtnSrc = require(order ? '../static/asc.png':'../static/desc.png')
+    const {sorts, order, updateHistory  } = props;
     const orderBtnSrc = require(order==='desc' ? '../static/desc.png':'../static/asc.png')
-
-
-
-
 
     const sortArray = sorts.map((value,index)=>{
         return (<option
@@ -25,22 +16,15 @@ const Sort = (props) => {
 
 
     const handleSortChange = (event) => {
-        console.log('handleSortChange');
         const target = event.target;
         const value= 'sort='+target.value;
         updateHistory(value)
-        // updateSort(value);
     }
 
     const handleSortOrderChange = () => {
-        console.log('handleSortOrderChange');
-        // const target = event.target;
-        // const newOrder = order ?  'desc':'asc';
         const value= 'order=' + (order==='desc' ?'asc' : 'desc');
         updateHistory(value)
-        // updateOrder();
     }
-
 
 
 

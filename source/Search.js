@@ -1,10 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import styles from './styles.css'
 
 const Search = (props) => {
-    // console.log('Rendering Search...')
-    const { updateRepos,clearFilters, loadRepos, reposLength, updateHistory, repoIsLoading, error, errorText  } = props;
+    const { reposLength, updateHistory, error, errorText  } = props;
     let searchInput='';
     const submitByEnter = (event) => {
         if (event.keyCode == 13) {
@@ -18,7 +16,6 @@ const Search = (props) => {
         const id = searchInput.id;
         searchInput.value ?
             (searchInput.value = '',updateHistory(value,id)): alert('Please enter value')
-        // loadRepos(value);
 
     }
 

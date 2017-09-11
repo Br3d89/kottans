@@ -13,7 +13,7 @@ const Card = (props) => {
         <li id={id+description} style={{ ...imgStyles }}>Description: {description}</li>
         <li id={id+isFork} style={{ ...imgStyles }}>IsFork: {isFork.toString()}</li>
         <li id={id+starsCount} style={{ ...imgStyles }}>Stars count: {starsCount}</li>
-            <li id={id+updatedDate} style={{ ...imgStyles }}>Updated: <span style={{display:'inline-block'}}><FormattedRelativeDate date={updatedDate} /></span></li>
+        <li id={id+updatedDate} style={{ ...imgStyles }}>Updated: <span style={{display:'inline-block'}}><FormattedRelativeDate date={updatedDate} /></span></li>
         <li id={id+language} style={{ ...imgStyles }}>Language: {language}</li>
         </ul>
       </div>

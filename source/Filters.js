@@ -1,28 +1,13 @@
 import React from 'react';
-// import filterStyles from './filter.css'
 import styles from './styles.css'
 
 const Filters = (props) => {
-    // console.log('Rendering Filters...')
-    const { updateFilter, filters, languages, queryObject, updateHistory  } = props;
+    const { languages, queryObject, updateHistory  } = props;
     const has = (obj, key) => {
         return Object.prototype.hasOwnProperty.call(obj, key);
     }
-    // console.log('Filters filters = ',filters);
-
-    const handleInputChange = (event) => {
-        console.log('handleInputChange');
-        const target = event.target;
-        const enabled = target.checked;
-        const name = target.name;
-        const id = target.id;
-        const value = true;
-        console.log(value);
-        updateFilter(id,value,enabled);
-    }
 
     const handleChange = (event) => {
-        console.log('handleHasIssuesChange function');
         const target = event.target;
         let id = target.id;
         switch(id){
@@ -42,29 +27,6 @@ const Filters = (props) => {
         updateHistory(id);
     }
 
-    const handleTextInputChange = (event) => {
-        console.log('handleInputChange');
-        const target = event.target;
-        console.log(target.value)
-        const enabled = !!target.value;
-        const name = target.name;
-        const id = target.id;
-        const value= 'sort='+target.value;
-        updateHistory(value);
-        // updateFilter(id,value,enabled);
-     }
-     
-     const handleSpanClick = (event) => {
-        console.log('handleSpanClick');
-        const target = event.target;
-        const value= target.getAttribute("value")
-        console.log(value)
-        const enabled = !!value;
-        const id = target.id;
-        updateFilter(id,value,enabled);
-     }
-     
-     
 
     const langSelect = languages.map((value,index)=>{
         return (<option
