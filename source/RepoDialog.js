@@ -25,37 +25,28 @@ export default class RepoDialog extends Component {
     }
 
     getDialogData(){
-        console.log('Running func getDialogData');
         let urls = []
         const result = {}
         const {repos,modalRepoName} = this.props;
         const repoObject = repos.filter((item) => item.name === modalRepoName)[0];
         const linkToRepo = repoObject.url;
         const linkToRepoGit = repoObject.html_url;
-        //const linkToPulls = repoObject.parent.pulls_url
-
         const contributorsUrl = repoObject.contributors_url + '?sort=popularity&direction=desc&per_page=3';
         const languagesUrl = repoObject.languages_url;
         const commentsUrl = linkToRepo+'/pulls?sort=popularity&direction=desc&per_page=5';
         urls.push(contributorsUrl,languagesUrl,commentsUrl)
-        const linkToFork = repoObject.fork? urls.push(linkToRepo) : console.log('not fork');
-
-
-        console.log('Starting Promise')
+        const linkToFork = repoObject.fork? urls.push(linkToRepo) : '';
         Promise.all(urls.map(url =>
             fetch(url).then(resp => resp.json())
         )).then(data => {
-             console.log('Data= ',data);
              this.setState({allReady:true,data, linkToRepoGit, linkToFork });
          },
-            error => alert("Ошибка: " + error.message) // Ошибка: Not Found
+            error => console.log("Error: " + error.message)
          )
-        console.log('Finished Promise, result=',this.state.data)
     }
 
     renderLinkToFork(){
       const forkGitUrl = this.state.data[3].parent.html_url
-        console.log('forkGitUrl=',forkGitUrl)
         return forkGitUrl
     }
 
@@ -136,8 +127,7 @@ export default class RepoDialog extends Component {
 
 
     render() {
-        console.log('Rendering RepoDialog component...', this.state)
-        this.state.allReady ? console.log('Allready rendering') : this.getDialogData();
+        this.state.allReady ? '' : this.getDialogData();
         return (
             <div className={styles.dialogContainerOut}>
         {this.state.allReady ? this.renderDialogData() : <img width='100' height='100' src={require('../static/loading.gif')}/>}
