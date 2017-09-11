@@ -110,7 +110,7 @@
 
 
 .searchInput {
-    width: 180px;
+    width: 250px;
     font-size:180%;
     border-radius: 35px;
     outline: none;
@@ -125,22 +125,22 @@
     box-shadow: 0 0 3px 3px var(--box-shadow-color);
 }
 
-.searchInput:hover {
+/*.searchInput:hover {*/
+    /*!*filter: blur(0.3px);*!*/
+    /*!*border: 2px solid dimgrey;*!*/
+    /*width: 340px;*/
+    /*height:70px;*/
+    /*font-size:250%;*/
     /*filter: blur(0.3px);*/
-    /*border: 2px solid dimgrey;*/
-    width: 340px;
-    height:70px;
-    font-size:250%;
-    filter: blur(0.3px);
-}
+/*}*/
 
-.searchInput:focus {
-    /*border: 2px solid dimgrey;*/
-    width: 340px;
-    height:70px;
-    font-size:250%;
-    filter: blur(0.3px);
-}
+/*.searchInput:focus {*/
+    /*!*border: 2px solid dimgrey;*!*/
+    /*width: 340px;*/
+    /*height:70px;*/
+    /*font-size:250%;*/
+    /*filter: blur(0.3px);*/
+/*}*/
 
 .searchInput::-webkit-input-placeholder { color:lightgray; }
 .searchInput:focus::-webkit-input-placeholder { color:transparent; }
@@ -319,9 +319,38 @@
 
 .result {
     list-style-type: none;
+    padding-left: 5px;
 }
 
 .avatars {
     border-radius: 50%;
     max-width: 100px;
+    padding-right:10px;
+}
+
+.dialogContainerIn {
+    padding:5px;
+
+}
+
+.dialogContainerOut {
+    padding: 10px;
+}
+
+.closeBtn {
+    float: right;
+}
+
+.topContrib {
+    display: flex;
+    align-items: center;
+}
+
+.dialogTitles {
+    font-size: 100%;
+    font-weight: bold;
+}
+
+.dialogSpace {
+    padding-bottom: 8px;
 }

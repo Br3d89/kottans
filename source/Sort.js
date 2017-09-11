@@ -2,12 +2,13 @@ import React from 'react';
 import styles from './styles.css'
 
 const Sort = (props) => {
-    console.log('Rendering Sort...')
+    // console.log('Rendering Sort...')
     const { updateSort, updateOrder, sorts, order, updateHistory  } = props;
-    console.log('order=',order);
+    // console.log('order=',order);
 
 
-    const orderBtnSrc = require(order ? '../static/asc.png':'../static/desc.png')
+    // const orderBtnSrc = require(order ? '../static/asc.png':'../static/desc.png')
+    const orderBtnSrc = require(order==='desc' ? '../static/desc.png':'../static/asc.png')
 
 
 
@@ -33,7 +34,11 @@ const Sort = (props) => {
 
     const handleSortOrderChange = () => {
         console.log('handleSortOrderChange');
-        updateOrder();
+        // const target = event.target;
+        // const newOrder = order ?  'desc':'asc';
+        const value= 'order=' + (order==='desc' ?'asc' : 'desc');
+        updateHistory(value)
+        // updateOrder();
     }
 
 

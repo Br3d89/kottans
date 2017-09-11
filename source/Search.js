@@ -3,8 +3,8 @@ import React from 'react';
 import styles from './styles.css'
 
 const Search = (props) => {
-    console.log('Rendering Search...')
-    const { updateRepos,clearFilters, loadRepos, reposLength, updateHistory, repoIsLoading  } = props;
+    // console.log('Rendering Search...')
+    const { updateRepos,clearFilters, loadRepos, reposLength, updateHistory, repoIsLoading, error, errorText  } = props;
     let searchInput='';
     const submitByEnter = (event) => {
         if (event.keyCode == 13) {
@@ -15,8 +15,9 @@ const Search = (props) => {
 
     const search= () => {
         const value = searchInput.value ;
+        const id = searchInput.id;
         searchInput.value ?
-            (searchInput.value = '',updateHistory(value)): alert('Please enter value')
+            (searchInput.value = '',updateHistory(value,id)): alert('Please enter value')
         // loadRepos(value);
 
     }
@@ -24,8 +25,13 @@ const Search = (props) => {
 
     return (
         <div className={[styles.searchContainer, !reposLength ? styles.__noData: ''].join(' ')}>
-             <div><input className={styles.searchInput} autoComplete="on" required size="40"  placeholder="Search..."  type="text" ref={(input)=>{searchInput=input}} onKeyDown={submitByEnter} />
+             <div><input className={styles.searchInput} id='search' autoComplete="off" required size="40"  placeholder="Search..."  type="text" ref={(input)=>{searchInput=input}} onKeyDown={submitByEnter} />
              <img className={styles.searchLogo} id="search_btn" onClick={search} src={require("../static/github.png")} /></div>
+            {error && (
+                <span>
+                    {errorText}
+                </span>
+            )}
         </div>
     );
 }

@@ -3,7 +3,7 @@ import Card from './Card';
 import styles from './styles.css';
 
 const Result = (props) => {
-    console.log('%c Rendering Result...', 'background: #222; color: red')
+    // console.log('%c Rendering Result...', 'background: #222; color: red')
     const {repos, openModal, modalIsOpen, closeModal, afterOpenModal, modalRepoName, updateHistory, searchString} = props;
 
      // updateHistory(searchString);
@@ -27,7 +27,7 @@ const Result = (props) => {
             )
         })
 
-    console.log('Result= ',results)
+    // console.log('Result= ',results)
 
         return (
             <div id='result' >

@@ -3,9 +3,12 @@ import React from 'react';
 import styles from './styles.css'
 
 const Filters = (props) => {
-    console.log('Rendering Filters...')
-    const { updateFilter, filters, languages  } = props;
-    console.log('Filters filters = ',filters);
+    // console.log('Rendering Filters...')
+    const { updateFilter, filters, languages, queryObject, updateHistory  } = props;
+    const has = (obj, key) => {
+        return Object.prototype.hasOwnProperty.call(obj, key);
+    }
+    // console.log('Filters filters = ',filters);
 
     const handleInputChange = (event) => {
         console.log('handleInputChange');
@@ -18,6 +21,27 @@ const Filters = (props) => {
         updateFilter(id,value,enabled);
     }
 
+    const handleChange = (event) => {
+        console.log('handleHasIssuesChange function');
+        const target = event.target;
+        let id = target.id;
+        switch(id){
+            case 'updated':
+                if (!target.value){
+                    break;
+                }
+            case 'language':
+                if (!target.value){
+                    break;
+                }
+            case 'type':
+            case 'starred_gt':
+                id=id+'='+target.value;
+                break;
+        }
+        updateHistory(id);
+    }
+
     const handleTextInputChange = (event) => {
         console.log('handleInputChange');
         const target = event.target;
@@ -25,8 +49,9 @@ const Filters = (props) => {
         const enabled = !!target.value;
         const name = target.name;
         const id = target.id;
-        const value = target.value;
-        updateFilter(id,value,enabled);
+        const value= 'sort='+target.value;
+        updateHistory(value);
+        // updateFilter(id,value,enabled);
      }
      
      const handleSpanClick = (event) => {
@@ -45,9 +70,17 @@ const Filters = (props) => {
         return (<option
             key={value+index}
             value={value}
-            defaultValue = {filters[5].enabled}
             >{value}
             </option>)
+    })
+
+    const type = ['all','forked','sources'];
+    const typeSelect = type.map((value,index)=>{
+        return (<option
+            key={value+index}
+            value={value}
+        >{value}
+        </option>)
     })
 
 
@@ -55,55 +88,53 @@ const Filters = (props) => {
         <ul className={styles.filterBlockContainer}>
 
         <li className={styles.filterBlockView}>
-        <label htmlFor="hasIssues">Has issues</label>
-        <input id="0"
+        <label htmlFor="has_issues">Has issues</label>
+        <input id="has_issues"
                type="checkbox"
-               checked={filters[0].enabled}
+               checked={has(queryObject,'has_issues')}
                name="has_issues"
-               onChange={handleInputChange}
+               onChange={handleChange}
                className={styles.hasIssuesFilter}/>
         </li>
 
         <li className={styles.filterBlockView}>
             <label htmlFor="hasTopics">Has topics</label>
-            <input id="1"
+            <input id="has_topics"
                    type="checkbox"
-                   checked={filters[1].enabled}
+                   checked={has(queryObject,'has_topics')}
                    name="has_topics"
-                   onChange={handleInputChange}
+                   onChange={handleChange}
                    className={styles.hasTopicsFilter}
             />
         </li>
 
         <li className={styles.filterBlockView}>
-            <label htmlFor="starred">Starred >= </label>
-            <input id="2"
+            <label htmlFor="starred_gt">Starred >= </label>
+            <input id="starred_gt"
                    type="text"
-                   value={filters[2].value}
-                   name="starred"
-                   onChange={handleTextInputChange}
+                   value={queryObject.starred_gt}
+                   name="starred_gt"
+                   onChange={handleChange}
                    className={styles.starredFilter}/>
         </li>
          <li className={styles.filterBlockView}>
             <label htmlFor="updated">Updated after date </label>
-            <input id="3"
+            <input id="updated"
                    type="datetime-local"
-                   value={filters[3].value}
+                   value={queryObject.updated}
                    name="updated"
-                   onChange={handleTextInputChange}
+                   onChange={handleChange}
                    className={styles.updatedDateFilter}/>
         </li>
          <li className={styles.filterBlockView}>
          <label htmlFor="type">Repo type </label>
-         <select id="4" size="1" className={styles.repoTypeFilter} onChange={handleTextInputChange}>
-            <option  value="all">All</option>
-            <option  value="forked">Forked</option>
-            <option  value="sources">Sources</option>
+         <select id="type" size="1" value={queryObject.type} className={styles.repoTypeFilter} onChange={handleChange}>
+             {typeSelect}
         </select>
         </li>
          <li className={styles.filterBlockView}>
             <label htmlFor="language">Language </label>
-            <select id="5" size="1" className={styles.languageFilter} onChange={handleTextInputChange}>
+            <select id="language" size="1" value = {queryObject.language} className={styles.languageFilter} onChange={handleChange}>
                 <option label=" "></option>
                 {langSelect}
             </select>

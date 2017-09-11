@@ -62,7 +62,13 @@ export default class RepoDialog extends Component {
     renderContribTable(){
         const topContributors = this.state.data[0].map((item,index)=>{
             return (
-                <li key={'contribLi'+index}>{item.login} | {item.contributions}<a href={item.url}>{item.url}  <img className={styles.avatars} src={item.avatar_url} /> </a></li>
+                <li key={'contribLi'+index} className={styles.topContrib}>
+                    <img className={styles.avatars} src={item.avatar_url} />
+                    <span>
+                        <span>{item.login} | {item.contributions} </span>
+                        <a href={item.url}>{item.url}  </a>
+                    </span>
+                </li>
             )
         })
         return topContributors
@@ -93,7 +99,7 @@ export default class RepoDialog extends Component {
     renderTopCommented(){
         const topComments = this.state.data[2].map((item,index)=>{
             return (
-                <li key={index+'comment'}>{item.title}<a href={item.html_url}>{item.html_url}</a></li>
+                <li key={index+'comment'}>{item.title} <a href={item.html_url}>{item.html_url}</a></li>
             )
         })
         return topComments
@@ -102,17 +108,27 @@ export default class RepoDialog extends Component {
     renderDialogData(){
         const {closeModal} = this.props
         return (
-            <div>
-                <button onClick={closeModal}>close</button>
+            <div className={styles.dialogContainerIn}>
+                <img onClick={closeModal} src={require('../static/close.png')} className={styles.closeBtn} height="50" width="50"/>
             <ul className={styles.result}>
-                <li key="linkToRepoGit">link to repo: <a href={this.state.linkToRepoGit}>{this.state.linkToRepoGit}</a></li>
-                {this.state.linkToFork? <li key="linkToFork">link to fork's source:  <a href={this.renderLinkToFork()}>{this.renderLinkToFork()}</a></li>: null }
-                Contributors table:
+                <li key="linkToRepoGit"><span className={styles.dialogTitles}>Link to repo:</span> <a href={this.state.linkToRepoGit}>{this.state.linkToRepoGit}</a></li>
+                {this.state.linkToFork? <li key="linkToFork"><span className={styles.dialogTitles}>Link to source: </span>  <a href={this.renderLinkToFork()}>{this.renderLinkToFork()}</a></li>: null }
+
+                <div className={styles.dialogSpace}>
+                <span className={styles.dialogTitles}>Contributors: </span>
                 {this.renderContribTable()}
-                Languages table:
+                </div>
+
+                <div className={styles.dialogSpace}>
+                <span className={styles.dialogTitles}>Languages:</span>
                 {this.renderLanguageTable()}
-                Most commented:
+                </div>
+
+                {this.state.data[2].length ?
+                <div className={styles.dialogSpace}>
+                    <span className={styles.dialogTitles}>Most commented:</span>
                 {this.renderTopCommented()}
+                </div>: null}
             </ul>
             </div>
         )
@@ -123,8 +139,8 @@ export default class RepoDialog extends Component {
         console.log('Rendering RepoDialog component...', this.state)
         this.state.allReady ? console.log('Allready rendering') : this.getDialogData();
         return (
-            <div>
-        {this.state.allReady ? this.renderDialogData() : <img src={require('../static/loading.gif')}/>}
+            <div className={styles.dialogContainerOut}>
+        {this.state.allReady ? this.renderDialogData() : <img width='100' height='100' src={require('../static/loading.gif')}/>}
         </div>
         )
     }

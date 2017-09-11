@@ -16,24 +16,26 @@ class App extends Component {
         super(props);
         this.state = {
             error: false,
-            test:false,
+            errorText: '',
+            test: false,
             repos: [],
             languages: [],
             searchName: '',
             showFilters: false,
             showResults: false,
             showSort: false,
-            showFilterContainer:false,
+            showFilterContainer: false,
             modalIsOpen: false,
-            nextLink:'',
-            searchString:'',
+            nextLink: '',
+            searchString: '',
             rendModal: false,
-            repoIsLoading:false,
-            modalRepoName:'',
-            scrollHasMore:false,
-            pageCount:0,
-            test:false,
-            page:0,
+            repoIsLoading: false,
+            modalRepoName: '',
+            scrollHasMore: false,
+            scrollIsLoading:false,
+            pageCount: 0,
+            test: false,
+            page: 0,
             filters: [
                 {
                     name: 'has_issues',
@@ -77,28 +79,28 @@ class App extends Component {
                     enabled: false,
                     value: true,
                 },
-                has_topics:{
+                has_topics: {
                     enabled: false,
                     value: true
                 },
-                starred:{
+                starred: {
                     enabled: false,
                     value: '0'
                 },
-                updated:{
+                updated: {
                     enabled: false,
                     value: '0'
                 },
-                type:{
+                type: {
                     enabled: false,
                     value: ''
                 },
-                language:{
+                language: {
                     enabled: false,
                     value: ''
                 }
             },
-            sorts:{
+            sorts: {
                 sortOrderType: true,
                 sortType: [
                     // {
@@ -108,31 +110,31 @@ class App extends Component {
                     //     type: 'select',
                     // },
                     {
-                    name: 'name',
-                    description: 'Repo name',
-                    enabled: true,
-                    type: 'select',
-                },
-                {
-                    name: 'stargazers_count',
-                    description: 'Stars count',
-                    enabled: false,
-                    type: 'select',
-                },
-                {
-                    name: 'open_issues_count',
-                    description: 'Open issues count',
-                    enabled: false,
-                    type: 'select',
-                },
-                {
-                    name: 'updated_at',
-                    description: 'Updated date',
-                    enabled: false,
-                    type: 'select',
-                    value: ''
-                }
-            ]
+                        name: 'name',
+                        description: 'Repo name',
+                        enabled: true,
+                        type: 'select',
+                    },
+                    {
+                        name: 'stargazers_count',
+                        description: 'Stars count',
+                        enabled: false,
+                        type: 'select',
+                    },
+                    {
+                        name: 'open_issues_count',
+                        description: 'Open issues count',
+                        enabled: false,
+                        type: 'select',
+                    },
+                    {
+                        name: 'updated_at',
+                        description: 'Updated date',
+                        enabled: false,
+                        type: 'select',
+                        value: ''
+                    }
+                ]
             },
             sort1: {
                 order: true,
@@ -140,22 +142,22 @@ class App extends Component {
                     enabled: false,
                     description: 'Repo name',
                 },
-                stargazers_count:{
+                stargazers_count: {
                     enabled: false,
                     description: 'Stars count',
                 },
-                open_issues_count:{
+                open_issues_count: {
                     enabled: false,
                     description: 'Open issues cunt',
                 },
-                updated_at:{
+                updated_at: {
                     enabled: false,
                     description: 'Updated date',
                 }
 
             }
         };
-        this.subtitle='';
+        this.subtitle = '';
         this.updateRepos = this.updateRepos.bind(this);
         this.filterRepos = this.filterRepos.bind(this);
         this.updateFilter = this.updateFilter.bind(this);
@@ -171,25 +173,37 @@ class App extends Component {
         this.loadRepos = this.loadRepos.bind(this);
         this.updateHistory = this.updateHistory.bind(this);
         this.fetchRepos = this.fetchRepos.bind(this);
+        this.updateError = this.updateError.bind(this);
     }
 
-    loadRepos= (searchString, action='loadRepos') => {
-        searchString ? this.setState({repoIsLoading:true}): '';
-        console.log(`Searching...${searchString}`);
-        let url='';
-        switch(action) {
+    loadRepos = (searchString, action = 'loadRepos') => {
+        console.log('Searching...');
+        let url = '';
+        let newRepos;
+        switch (action) {
             case 'loadMore':
                 // url = searchString;
                 // searchString = this.state.searchString;
-                searchString = this.state.searchString;
-                url = this.state.nextLink;
+                // searchString = this.state.searchString;
+                // url = `https://api.github.com/users/${searchString.user}/repos?per_page=100&page=${searchString.page}`
+                // let page = searchString.page;
+                // searchString = searchString.user;
+                url = `https://api.github.com/users/${this.state.searchString}/repos?per_page=100&${searchString}`
+                this.setState({scrollHasMore:false});
+                // this.setState({page:searchString.page});
+                // url = this.state.nextLink;
+                // searchString = searchString.user
+                // searchString=this.state.searchString;
                 break;
             case 'loadQuery':
-                searchString = searchString.match.params.searchString
+                // searchString = searchString.match.params.searchString
                 url = `https://api.github.com/users/${searchString}/repos?per_page=100`
+                // searchString ? this.setState({repoIsLoading: true}) : '';
+                // this.setState({repoIsLoading: true});
                 break;
             case 'loadRepos':
                 url = `https://api.github.com/users/${searchString}/repos?per_page=100`
+                searchString ? this.setState({repoIsLoading: true}) : '';
 
         }
         let xhr = new XMLHttpRequest();
@@ -197,99 +211,99 @@ class App extends Component {
         xhr.setRequestHeader('Accept', 'application/vnd.github.mercy-preview+json');
         xhr.send();
         let self = this
-        console.log(xhr.readyState);
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (xhr.readyState != 4) return;
 
             if (xhr.status != 200) {
-                // alert(xhr.status + ': ' + xhr.statusText);
-                self.setState({error: true})
-                setTimeout(() => {
-                    self.setState({error: false})
-                }, 2000)
+                self.updateError(xhr, searchString);
+                // self.setState({error: true})
+                // setTimeout(() => {
+                //     self.setState({error: false})
+                // }, 2000)
             } else {
                 let data = JSON.parse(xhr.responseText);
+                data = action==='loadMore' ? (newRepos=self.state.repos, newRepos.concat(data)): data;
+                action ==='loadMore' ? self.updateHistory(searchString):'';
                 let nextUrl = xhr.getResponseHeader("Link");
-                self.updateRepos(data,nextUrl,searchString);
+                action==='loadMore' ? self.updateRepos(data, nextUrl, self.state.searchString) : self.updateRepos(data, nextUrl, searchString);
 
             }
         }
 
     }
 
-     fetchRepos(searchString) {
+    fetchRepos(searchString) {
         let result;
         fetch('searchString')
-             .then(function(response) {
-                 return response.json();
-             })
-             .then(function(data) {
-                 result=data;
-             })
-             .catch( alert );
-        setTimeout(()=>result,2000);
-     }
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                result = data;
+            })
+            .catch(alert);
+        setTimeout(() => result, 2000);
+    }
 
+    updateError(statusCode, searchString) {
+        console.log('UpdateError func is running, statusCode=', statusCode)
+        let state = this.state;
+        state.repoIsLoading = false;
+        state.searchString = searchString;
+        state.error = true;
+        state.scrollIsLoading= false;
+        state.errorText = statusCode.status + ': ' + statusCode.statusText;
+        this.setState(state);
+        // this.setState({error: true, searchString});
+        // alert(statusCode);
+        // this.updateHistory('','search')
+        // setTimeout(() => {
+        //     this.setState({error: false});
+        // }, 2000)
+        setTimeout(() => {
+            this.updateHistory('','search');
+        }, 2000)
+
+    }
 
     updateRepos(repos, nextUrl, searchString) {
         console.log('Updating user ', searchString)
         let state = this.state;
-        state.searchString=searchString;
-        state.repos=repos;
-        state.repoIsLoading=false;
+        state.searchString = searchString;
+        state.repos = repos;
+        state.repoIsLoading = false;
+        state.error = false;
+        // state.scrollIsLoading = false;
+        // state.page= nextUrl ? parseInt(queryString.parse(nextUrl.split(',')[0].split(';')[0].slice(1,-1).split('?')[1].split('&')[1]).page)-1 :'';
         state.nextLink = nextUrl ? nextUrl.split(',')[0].split(';')[0].slice(1, -1) : '';
         const nextLinkRel = nextUrl ? nextUrl.split(',')[0].split(';')[1].split('"')[1] : '';
         state.scrollHasMore = (nextLinkRel === 'first') || (nextLinkRel === "") ? false : true;
-        //this is for infinite loading, don't delete!!!
-        // const newRepos = (this.state.searchString !== searchString) || (this.state.nextLink === nextLink) ? repos: oldRepos.concat(repos);
         state.languages = (repos.length >= 1) ? this.languageArr(repos) : [];
         state.showFilterContainer = (repos.length >= 1) ? true : false;
         state.showResults = (repos.length >= 1) ? true : false;
-        // const queryParameters = searchString.location.search ? searchString.location.search: this.setState(state);
-        // const queryObject = queryString.parse(queryParameters);
-        // for (let i in queryObject) {
-        //     switch (i) {
-        //         case 'sort':
-        //             const sortObject= state.sort1[queryObject[i]];
-        //             sortObject.enabled = true;
-        //             break;
-        //         case 'order':
-        //             state.sort1.order = queryObject[i];
-        //             break;
-        //         case 'page':
-        //             state.page = queryObject[i];
-        //             break;
-        //         case 'has_issues':
-        //             state.filters1.has_issues.enabled = true;
-        //             break;
-        //         case 'has_topics':
-        //             state.filters1.has_topics.enabled = true;
-        //             break;
-        //         case 'starred':
-        //             state.filters1.starred.enabled = true;
-        //             state.filters1.starred.value = queryObject[i];
-        //             break;
-        //         case 'type':
-        //             state.filters1.type.enabled = true;
-        //             state.filters1.type.value = queryObject[i];
-        //             break;
-        //         case 'language':
-        //             state.filters1.language.enabled = true;
-        //             state.filters1.language.value = queryObject[i];
-        //             break;
-        //     }
-        //     ;
-        //
-        // }
         this.setState(state);
     }
 
-
-    updateHistory (value){
-        console.log('updateHistory function running')
-        this.props.history.push(this.props.match.params.searchString ? '&'+value : value)
-        console.log('finish');
-        // this.loadRepos(value);
+    updateHistory(value, source='') {
+        console.log('updateHistory function running', this.props, !!this.props.match.params.searchString)
+        console.log('State=',this.state);
+        switch (source) {
+            case 'search':
+                this.props.history.push(value);
+                break;
+            default:
+                let qString = queryString.parse(this.props.location.search)
+                let newValueQ = queryString.parse('?'+value);
+                if (value in qString) {
+                    delete qString[value];
+                    newValueQ = {}
+                }
+                let newObject = Object.assign({},qString,newValueQ);
+                let newQString = queryString.stringify(newObject);
+                const searchString = this.props.match.params.searchString;
+                const pushInfo = searchString + (newQString ? ('?'+newQString): newQString);
+                this.props.history.push(pushInfo);
+        }
     }
 
     updateFilter(id,value,enabled){
@@ -538,24 +552,27 @@ class App extends Component {
         for (let i in filterSortObject) {
             switch (i) {
                 case 'has_issues':
-                    console.log('has_issues before case, newRepos= ', newRepos)
+                    console.log('has_issues before case, newRepos= ', newRepos);
                     newRepos = newRepos.filter((item) => item.has_issues === true);
-                    console.log('has_issues after case, newRepos= ', newRepos)
+                    console.log('has_issues after case, newRepos= ', newRepos);
                     break;
                 case 'has_topics':
-                    console.log('has_topics before case, newRepos= ', newRepos)
+                    console.log('has_topics before case, newRepos= ', newRepos);
                     newRepos = newRepos.filter((item) => item.topics.length > 0);
+                    console.log('has_topics after case, newRepos= ', newRepos);
                     break;
-                case 'starred':
-                    console.log('starred before case, newRepos= ', newRepos)
+                case 'starred_gt':
+                    console.log('starred before case, newRepos= ', newRepos);
                     newRepos = newRepos.filter((item) => item.stargazers_count >= filterSortObject[i]);
+                    console.log('starred after case, newRepos= ', newRepos);
                     break;
                 case 'updated':
-                    console.log('updated before case, newRepos= ', newRepos)
+                    console.log('updated before case, newRepos= ', newRepos);
                     newRepos = newRepos.filter((item) => Date.parse(item.updated_at) >= Date.parse(filterSortObject[i]));
+                    console.log('updated after case, newRepos= ', newRepos);
                     break;
                 case 'type':
-                    console.log('type before case, newRepos= ', newRepos)
+                    console.log('type before case, newRepos= ', newRepos);
                     newRepos = newRepos.filter((item) => {
                         switch (filterSortObject[i]) {
                             case 'forked':
@@ -567,14 +584,91 @@ class App extends Component {
                         }
                         item.fork === filterSortObject[i]
                     });
+                    console.log('type after case, newRepos= ', newRepos);
                     break;
                 case 'language':
-                    console.log('language before case, newRepos= ', newRepos)
+                    console.log('language before case, newRepos= ', newRepos);
                     newRepos = newRepos.filter((item) => item.language === filterSortObject[i]);
+                    console.log('language after case, newRepos= ', newRepos);
                     break;
-                case 'name':
+                case 'sort':
+                    switch(filterSortObject['sort']) {
+                        case 'name':
+                            switch (orderType) {
+                                case 'desc':
+                                    newRepos = newRepos.sort((a, b) => {
+                                        if (a.name.toLowerCase() < b.name.toLowerCase()) return 1;
+                                        if (a.name.toLowerCase() > b.name.toLowerCase()) return -1;
+                                    })
+                                    break;
+                                default:
+                                    newRepos = newRepos.sort((a, b) => {
+                                        if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                                        if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                                    })
+                            }
+                            break;
+                        case 'stargazers_count':
+                            switch (orderType) {
+                                case 'desc':
+                                    newRepos = newRepos.sort((a, b) => {
+                                        const x = parseInt(a.stargazers_count);
+                                        const y = parseInt(b.stargazers_count);
+                                        if (x > y) return 1;
+                                        if (x < y) return -1;
+                                    })
+                                    break;
+                                default :
+                                    newRepos = newRepos.sort((a, b) => {
+                                        let x = parseInt(a.stargazers_count);
+                                        let y = parseInt(b.stargazers_count);
+                                        if (x < y) return 1;
+                                        if (x > y) return -1;
+                                    })
+                            }
+                            break;
+                        case 'open_issues_count':
+                            switch (orderType) {
+                                case 'desc':
+                                    newRepos = newRepos.sort((a, b) => {
+                                        const x = parseInt(a.open_issues_count);
+                                        const y = parseInt(b.open_issues_count);
+                                        if (x > y) return 1;
+                                        if (x < y) return -1;
+                                    })
+                                    break;
+                                default:
+                                    newRepos = newRepos.sort((a, b) => {
+                                        let x = parseInt(a.open_issues_count);
+                                        let y = parseInt(b.open_issues_count);
+                                        if (x < y) return 1;
+                                        if (x > y) return -1;
+                                    })
+                            }
+                            break;
+                        case 'updated_at':
+                            switch (orderType) {
+                                case 'desc':
+                                    newRepos = newRepos.sort((a, b) => {
+                                        const x = parseInt(Date.parse(a.updated_at));
+                                        const y = parseInt(Date.parse(b.updated_at));
+                                        if (x > y) return 1;
+                                        if (x < y) return -1;
+                                    })
+                                    break;
+                                default:
+                                    newRepos = newRepos.sort((a, b) => {
+                                        let x = parseInt(Date.parse(a.updated_at));
+                                        let y = parseInt(Date.parse(b.updated_at));
+                                        if (x < y) return 1;
+                                        if (x > y) return -1;
+                                    })
+                            }
+                            break;
+                    } break;
+                case 'order':
                     switch (orderType) {
-                        case false:
+                        case 'desc':
                             newRepos = newRepos.sort((a, b) => {
                                 if (a.name.toLowerCase() < b.name.toLowerCase()) return 1;
                                 if (a.name.toLowerCase() > b.name.toLowerCase()) return -1;
@@ -587,93 +681,32 @@ class App extends Component {
                             })
                     }
                     break;
-                case 'stargazers_count':
-                    switch (orderType) {
-                        case 'desc':
-                            newRepos = newRepos.sort((a, b) => {
-                                const x = parseInt(a.stargazers_count);
-                                const y = parseInt(b.stargazers_count);
-                                if (x > y) return 1;
-                                if (x < y) return -1;
-                            })
-                            break;
-                        default :
-                            newRepos = newRepos.sort((a, b) => {
-                                let x = parseInt(a.stargazers_count);
-                                let y = parseInt(b.stargazers_count);
-                                if (x < y) return 1;
-                                if (x > y) return -1;
-                            })
                     }
-                    break;
-                case 'open_issues_count':
-                    switch (orderType) {
-                        case 'desc':
-                            newRepos = newRepos.sort((a, b) => {
-                                const x = parseInt(a.open_issues_count);
-                                const y = parseInt(b.open_issues_count);
-                                if (x > y) return 1;
-                                if (x < y) return -1;
-                            })
-                            break;
-                        default:
-                            newRepos = newRepos.sort((a, b) => {
-                                let x = parseInt(a.open_issues_count);
-                                let y = parseInt(b.open_issues_count);
-                                if (x < y) return 1;
-                                if (x > y) return -1;
-                            })
-                    }
-                    break;
-                case 'updated_at':
-                    switch (this.state.sorts.sortOrderType) {
-                        case 'desc':
-                            newRepos = newRepos.sort((a, b) => {
-                                const x = parseInt(Date.parse(a.updated_at));
-                                const y = parseInt(Date.parse(b.updated_at));
-                                if (x > y) return 1;
-                                if (x < y) return -1;
-                            })
-                            break;
-                        default:
-                            newRepos = newRepos.sort((a, b) => {
-                                let x = parseInt(Date.parse(a.updated_at));
-                                let y = parseInt(Date.parse(b.updated_at));
-                                if (x < y) return 1;
-                                if (x > y) return -1;
-                            })
-                    }
-                    break;
-            }
         }
         return newRepos;
     }
 
-
     languageArr(newRepos){
     let langArr = [...new Set(newRepos.map((value)=>value.language).filter((value)=>value!=null))];
-    //console.log('%c Language array ','background: #222; color: #bada55',alllangs);
-    //let langArr = [...new Set(alllangs)];
-    //console.log('%c Language array ','background: #222; color: #bada55',langArr);
     return langArr;
     }
 
-    openModal(evt) {
-        console.log(evt.target.parentNode)
-        console.log(evt.target.children)
-        console.log('Open modal func')
-        let modalRepoName;
-        const target = evt.target
-        if (target.children.length != 0){
-            console.log('div')
-            modalRepoName =target.firstChild.firstChild.getAttribute('value')
-        }
-        else {
-            console.log('li')
-            modalRepoName=target.parentNode.firstChild.getAttribute('value')
-        }
-        console.log(modalRepoName)
-        this.setState({modalIsOpen: true,modalRepoName});
+    openModal(modalRepoName) {
+        // console.log(evt.target.parentNode)
+        // console.log(evt.target.children)
+        // console.log('Open modal func')
+        // let modalRepoName;
+        // const target = evt.target
+        // if (target.children.length != 0){
+        //     console.log('div')
+        //     modalRepoName =target.firstChild.firstChild.getAttribute('value')
+        // }
+        // else {
+        //     console.log('li')
+        //     modalRepoName=target.parentNode.firstChild.getAttribute('value')
+        // }
+        // console.log(modalRepoName)
+        this.setState({modalIsOpen: true, modalRepoName});
     }
 
     afterOpenModal() {
@@ -686,34 +719,25 @@ class App extends Component {
     }
 
     loadMore(page)    {
-        console.log('load more func if statement, page=', page)
-        // let action = 'loadMore';
+        console.log('load more func if statement, page=', page, this.state.scrollHasMore)
+        console.log('State=',this.state);
+        // this.setState({hasMore:false});
+        // this.state.scrollIsLoading?  console.log('Scroll in loading state, do nothing')
+        // :this.updateHistory('page='+(parseInt(page)+1));
+
+        // this.setState({scrollIsLoading:true});
+        // this.setState({hasMore:false});
+        // this.updateHistory('page='+(parseInt(page)+1));
         // let searchString = this.state.nextLink;
-        let newPage = 'page='+page
-        this.updateHistory(newPage);
-        // this.loadRepos('', 'loadMore');
+        this.loadRepos('page='+(parseInt(page)+1), 'loadMore');
        }
 
-    // componentDidMount(){
-    //     console.log('component did mount')
-    // }
 
-    // componentDidUpdate(){
-    //     console.log('component did update', this.props)
-    // //     this.props.match.params.searchString ? this.loadRepos(this.props.match.params.searchString):'';
-    //  }
-
-    shouldComponentUpdate(nextProps, nextState){
-        return this.state.searchString !== nextProps.match.params.searchString ? false: true;
-        console.log('should component update props,nextprops,nextstate,prevState', this.props,nextProps, nextState,this.state)
-    }
-
-    // componentWillUnmount(){
-    //     console.log('component will unmount', this.props)
-    // }
-
-    // componentWillUpdate(){
-    //     console.log('component will update', this.props)
+    // shouldComponentUpdate(nextProps, nextState){
+    //     console.log('should component update props,nextprops,nextstate,prevState', this.props,nextProps, nextState,this.state)
+    //     const searchString = nextProps.match.params.searchString===undefined ? '': nextProps.match.params.searchString;
+    //     const shouldValue = this.state.searchString !== searchString;
+    //     return shouldValue ? false: true;
     // }
 
     componentWillMount(){
@@ -722,18 +746,55 @@ class App extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        console.log('component will receive props NextProps=',nextProps, this.props)
-        // nextProps.match.params.searchString &&(this.props.match.params.searchString !== nextProps.match.params.searchString) ? this.loadRepos(nextProps.match.params.searchString):'';
-        console.log(this.state);
-        nextProps.match.params.searchString ? this.loadRepos(nextProps, 'loadQuery'):this.updateRepos([],'','');
-        //nextProps.location
+        console.log('component will receive props NextProps=',nextProps, this.props);
+        console.log('State=',this.state);
+        const matchSearchString = nextProps.match.params.searchString;
+        const locationSearch = nextProps.location.search;
+        if (matchSearchString) {
+            //only for clear search of new user
+            if (locationSearch.length===0){
+                //load repos for new user
+                this.updateRepos([],'','');
+                this.loadRepos(matchSearchString);
+            }
+            // only for loadMore action
+            // else if (locationSearch.indexOf('page')) {
+            //     {
+            //         const newQueryObject = queryString.parse(nextProps.location.search);
+            //         const oldQueryObject = queryString.parse(this.props.location.search);
+            //         if (newQueryObject.page !== oldQueryObject.page) {
+            //             // newQueryObject.user = nextProps.match.params.searchString;
+            //             // this.loadRepos(newQueryObject, 'loadMore')
+            //             this.loadMore(newQueryObject.page);
+            //         }
+            //     }
+            // }
 
+        }
+        //clear state
+        else {
+            this.updateRepos([],'','');
+        }
+        // const queryObject = queryString.parse(nextProps.location.search);
+        // if (('page' in queryObject) && this.state.page!==queryObject['page']) {
+        //     // this.setState({scrollHasMore:false});
+        //     queryObject.user = nextProps.match.params.searchString;
+        //     this.loadRepos(queryObject, 'loadMore')
+        // }
+        // if (!nextProps.match.params.searchString) {
+        //     this.updateRepos([],'','');
+        // }
+        // if ((nextProps.location.search.length < this.props.location.search.length) && nextProps.location.pathname) {
+        //     return;
+        // }
+        // (nextProps.match.params.searchString && !nextProps.location.search) ? this.loadRepos(nextProps, 'loadQuery'):
+        //     nextProps.match.params.searchString? '': this.updateRepos([],'','');
     }
 
 
 
     render(){
-        console.log('%c Rendering App...','background: #222; color: red',this.state, this.props);
+        console.log('%c Rendering App...','background: #222; color: red',this.state);
         const customStyles = {
             content : {
                 top                   : '50%',
@@ -741,15 +802,15 @@ class App extends Component {
                 right                 : 'auto',
                 bottom                : 'auto',
                 marginRight           : '-50%',
-                transform             : 'translate(-50%, -50%)'
-            }
+                transform             : 'translate(-50%, -50%)',
+                borderRadius          :  '15px',
+                boxShadow             : '0 0 5px 5px lightgrey',
+                padding               : '5px',
+            },
         };
-        console.log('This props=',this.props);
         const queryObject = this.props.location.search ? queryString.parse(this.props.location.search): '';
-        // let enabledFilters = this.state.filters.filter((item)=>item.enabled===true);
-        // let enabledSort = this.state.sorts.sortType.filter((item)=>item.enabled===true);
-        // let filteredRepos = (enabledFilters.length || enabledSort.length) ? this.filterRepos(this.state.repos, enabledFilters, enabledSort): this.state.repos;
-        let filteredRepos = (queryObject && this.state.repos.length) ? this.filterRepos(queryObject): this.state.repos;
+        let filteredRepos = !!(this.props.location.search.length && this.state.repos.length) ? this.filterRepos(queryObject): this.state.repos;
+        let filteredLanguages = (this.props.location.search.indexOf('language'))? this.state.languages: this.languageArr(filteredRepos);
         return (
             <div className={[styles.appContainer, !this.state.repos.length ? styles.__noData : ''].join(' ')}>
                 {!this.state.repoIsLoading ? (
@@ -760,20 +821,28 @@ class App extends Component {
                     reposLength = {this.state.repos.length}
                     updateHistory = {this.updateHistory}
                     repoIsLoading = {this.state.repoIsLoading}
-                    />) : <img src={require('../static/loading.gif')}/> }
+                    error = {this.state.error}
+                    errorText = {this.state.errorText}
+                    />
+                ) : <img width='50' height='50' src={require('../static/loading.gif')}/> }
+
                     {this.state.showFilterContainer ?
                          <div className={styles.filterContainer}>
                              <Filters
                                 updateFilter = {this.updateFilter}
                                 filters = {this.state.filters}
-                                languages = {this.state.languages}
+                                languages = {filteredLanguages}
+                                queryObject = {queryObject}
+                                updateHistory = {this.updateHistory}
                              />
                              <Sort
                                  updateSort = {this.updateSort}
                                  updateOrder = {this.updateOrder}
                                  sorts= {this.state.sorts.sortType}
-                                 order={this.state.sorts.sortOrderType}
+                                 // order={this.state.sorts.sortOrderType}
+                                 order={queryObject.order}
                                  updateHistory = {this.updateHistory}
+
                              />
                     </div>: null}
               {this.state.showResults ?
@@ -782,9 +851,12 @@ class App extends Component {
                       pageStart={0}
                       loadMore={this.loadMore}
                       hasMore={this.state.scrollHasMore}
-                      loader={<div className="loader">Loading ...</div>}
+                      loader={<div className="loader">
+                          <img width='50' height='50' src={require("../static/loading.gif")}/>
+                          </div>}
                       useWindow={false}
-                      initialLoad={false}
+                      initialLoad={true}
+
                   >
                       <Result
                           repos  = {filteredRepos}
@@ -801,14 +873,14 @@ class App extends Component {
                   </InfiniteScroll> </div>
                   : null}
 
-                    {this.state.error && (
-                        <div>
-                            error motherfucker
-                        </div>
-                    )}
+                    {/*{this.state.error && (*/}
+                        {/*<div>*/}
+                            {/*error motherfucker*/}
+                        {/*</div>*/}
+                    {/*)}*/}
                         <Modal
                             isOpen={this.state.modalIsOpen}
-                            contentLabel="Card Modal Example"
+                            contentLabel="Card"
                             onRequestClose={this.closeModal}
                             style={customStyles}
                         >
