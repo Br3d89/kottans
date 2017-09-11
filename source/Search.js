@@ -4,6 +4,8 @@ import styles from './styles.css'
 const Search = (props) => {
     const { reposLength, updateHistory, error, errorText  } = props;
     let searchInput='';
+    let emptyError='';
+    let errorStyle={display:'none'};
     const submitByEnter = (event) => {
         if (event.keyCode == 13) {
             document.getElementById("search_btn").click();
@@ -15,7 +17,7 @@ const Search = (props) => {
         const value = searchInput.value ;
         const id = searchInput.id;
         searchInput.value ?
-            (searchInput.value = '',updateHistory(value,id)): alert('Please enter value')
+            (searchInput.value = '',updateHistory(value,id)): '';
 
     }
 
