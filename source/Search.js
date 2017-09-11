@@ -4,8 +4,6 @@ import styles from './styles.css'
 const Search = (props) => {
     const { reposLength, updateHistory, error, errorText  } = props;
     let searchInput='';
-    let emptyError='';
-    let errorStyle={display:'none'};
     const submitByEnter = (event) => {
         if (event.keyCode == 13) {
             document.getElementById("search_btn").click();
