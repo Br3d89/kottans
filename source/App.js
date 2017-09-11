@@ -273,7 +273,7 @@ class App extends Component {
     }
 
     languageArr(newRepos){
-    return langArr = [...new Set(newRepos.map((value)=>value.language).filter((value)=>value!=null))];
+    const langArr = [...new Set(newRepos.map((value)=>value.language).filter((value)=>value!=null))];
     return langArr;
     }
 
