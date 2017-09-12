@@ -131,7 +131,7 @@ class App extends Component {
                 break;
             default:
                 let qString = queryString.parse(this.props.location.search)
-                let newValueQ = queryString.parse('?'+value);
+                let newValueQ = queryString.parse('?'+((value.indexOf('=')>=0)? (value.split('=')[0]+'='+encodeURIComponent(value.split('=')[1])): value));
                 if (value in qString) {
                     delete qString[value];
                     newValueQ = {}
@@ -329,7 +329,9 @@ class App extends Component {
         };
         const queryObject = this.props.location.search ? queryString.parse(this.props.location.search): '';
         let filteredRepos = !!(this.props.location.search.length && this.state.repos.length) ? this.filterRepos(queryObject): this.state.repos;
-        let filteredLanguages = (this.props.location.search.indexOf('language'))? this.state.languages: this.languageArr(filteredRepos);
+        let langIndex = this.props.location.search.indexOf('language');
+        let pageIndex = this.props.location.search.indexOf('page');
+        let filteredLanguages = (((langIndex>0 && pageIndex>0) && Object.keys(queryObject).length==2) || langIndex>0 && Object.keys(queryObject).length==1 )? this.state.languages: this.languageArr(filteredRepos);
         return (
             <div className={[styles.appContainer, !this.state.repos.length ? styles.__noData : ''].join(' ')}>
                 {!this.state.repoIsLoading ? (
