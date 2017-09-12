@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './styles.css'
 
 const Filters = (props) => {
-    const { languages, queryObject, updateHistory  } = props;
+    const { languages, queryObject, updateHistory, updateLangState  } = props;
     const has = (obj, key) => {
         return Object.prototype.hasOwnProperty.call(obj, key);
     }
@@ -17,8 +17,13 @@ const Filters = (props) => {
                 }
             case 'language':
                 if (!target.value){
-                    break;
+                    updateLangState([],id);
                 }
+                else {
+                    updateLangState(languages,id+'='+target.value);
+
+                }
+                return;
             case 'type':
             case 'starred_gt':
                 id=id+'='+target.value;

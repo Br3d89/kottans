@@ -19,6 +19,7 @@ class App extends Component {
             errorText: '',
             repos: [],
             languages: [],
+            fLanguages: [],
             showResults: false,
             showFilterContainer: false,
             modalIsOpen: false,
@@ -57,6 +58,7 @@ class App extends Component {
         this.loadRepos = this.loadRepos.bind(this);
         this.updateHistory = this.updateHistory.bind(this);
         this.updateError = this.updateError.bind(this);
+        this.updateLangState = this.updateLangState.bind(this);
     }
 
     loadRepos = (searchString, action = 'loadRepos') => {
@@ -272,6 +274,12 @@ class App extends Component {
         return newRepos;
     }
 
+    updateLangState(arr,id){
+        this.setState({fLanguages:arr});
+        this.updateHistory(id);
+    }
+
+
     languageArr(newRepos){
     const langArr = [...new Set(newRepos.map((value)=>value.language).filter((value)=>value!=null))];
     return langArr;
@@ -303,6 +311,9 @@ class App extends Component {
                 this.updateRepos([],'','');
                 this.loadRepos(matchSearchString);
             }
+            // else if (locationSearch.indexOf('language')>0 && this.props.location.search.indexOf('language')===-1){
+            //     this.setState({langStop:true});
+            // }
         }
         //clear state
         else {
@@ -331,7 +342,8 @@ class App extends Component {
         let filteredRepos = !!(this.props.location.search.length && this.state.repos.length) ? this.filterRepos(queryObject): this.state.repos;
         let langIndex = this.props.location.search.indexOf('language');
         let pageIndex = this.props.location.search.indexOf('page');
-        let filteredLanguages = (((langIndex>0 && pageIndex>0) && Object.keys(queryObject).length==2) || langIndex>0 && Object.keys(queryObject).length==1 )? this.state.languages: this.languageArr(filteredRepos);
+        let filteredLanguages = (((langIndex>0 && pageIndex>0) && Object.keys(queryObject).length==2) || langIndex>0 && Object.keys(queryObject).length==1 )? this.state.languages
+            : (this.state.fLanguages.length ? this.state.fLanguages: this.languageArr(filteredRepos));
         return (
             <div className={[styles.appContainer, !this.state.repos.length ? styles.__noData : ''].join(' ')}>
                 {!this.state.repoIsLoading ? (
@@ -349,6 +361,7 @@ class App extends Component {
                                 languages = {filteredLanguages}
                                 queryObject = {queryObject}
                                 updateHistory = {this.updateHistory}
+                                updateLangState = {this.updateLangState}
                              />
                              <Sort
                                  sorts= {this.state.sorts.sortType}
